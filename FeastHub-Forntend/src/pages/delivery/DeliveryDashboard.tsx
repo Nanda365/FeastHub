@@ -586,6 +586,7 @@ const DeliveryDashboard = () => {
                       <th className="text-left font-inter font-semibold text-gray-600 pb-3">Food Item</th>
                       <th className="text-left font-inter font-semibold text-gray-600 pb-3">Quantity</th>
                       <th className="text-left font-inter font-semibold text-gray-600 pb-3">Expire Date</th>
+                      <th className="text-left font-inter font-semibold text-gray-600 pb-3">Phone Number</th>
                       <th className="text-left font-inter font-semibold text-gray-600 pb-3">Status</th>
                       <th className="text-left font-inter font-semibold text-gray-600 pb-3">Action</th>
                     </tr>
@@ -596,6 +597,7 @@ const DeliveryDashboard = () => {
                         <td className="py-4 font-inter font-medium text-accent-charcoal">{donation.foodItem}</td>
                         <td className="py-4 font-inter text-gray-600">{donation.quantity}</td>
                         <td className="py-4 font-inter text-gray-600">{new Date(donation.expirationDate).toLocaleDateString()}</td>
+                        <td className="py-4 font-inter text-gray-600">{donation.contactPhone}</td>
                         <td className="py-4 font-inter text-gray-600">{donation.status}</td>
                         <td className="py-4">
                           {donation.status === 'pending' && !acceptedDonations.includes(donation._id) && (

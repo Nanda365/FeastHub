@@ -240,11 +240,11 @@ const AdminDashboard = () => {
     }));
 
   const stats = [
-    { title: 'Total Users', value: totalUsersCount.toLocaleString(), change: '+12%', icon: Users, color: 'bg-blue-500' },
-    { title: 'Active Restaurants', value: activeRestaurantsCount.toLocaleString(), change: '+8%', icon: Store, color: 'bg-green-500' },
-    { title: 'Delivery Partners', value: deliveryPartnersCount.toLocaleString(), change: '+15%', icon: Truck, color: 'bg-purple-500' },
-    { title: 'Total Orders', value: orders.length.toLocaleString(), change: '+23%', icon: Package, color: 'bg-orange-500' },
-    { title: 'Revenue', value: `₹${totalAdminRevenue.toFixed(2)}`, change: '+18%', icon: DollarSign, color: 'bg-emerald-500' },
+    { title: 'Total Users', value: totalUsersCount.toLocaleString(), change: '', icon: Users, color: 'bg-blue-500' },
+    { title: 'Active Restaurants', value: activeRestaurantsCount.toLocaleString(), change: '+80%', icon: Store, color: 'bg-green-500' },
+    { title: 'Delivery Partners', value: deliveryPartnersCount.toLocaleString(), change: '+05%', icon: Truck, color: 'bg-purple-500' },
+    { title: 'Total Orders', value: orders.length.toLocaleString(), change: '+15%', icon: Package, color: 'bg-orange-500' },
+    { title: 'Revenue', value: `₹${totalAdminRevenue.toFixed(2)}`, change: '+15%', icon: DollarSign, color: 'bg-emerald-500' },
     { title: 'Avg Rating', value: '4.8', change: '+0.2', icon: Star, color: 'bg-yellow-500' }
   ];
 
