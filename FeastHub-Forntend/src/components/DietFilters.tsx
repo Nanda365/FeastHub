@@ -64,7 +64,7 @@ const DietFilters = () => {
                 onClick={() => toggleFilter(filter.id)}
                 className={`flex items-center space-x-2 px-4 py-3 rounded-full font-inter font-medium transition-all duration-300 transform hover:scale-105 ${
                   isActive
-                    ? 'bg-gradient-orange-yellow text-white shadow-lg'
+                    ? 'bg-gradient-teal-cyan text-white shadow-lg'
                     : `${filter.color} hover:shadow-md`
                 }`}
               >

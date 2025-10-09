@@ -26,7 +26,7 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-orange-yellow rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-teal-cyan rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-xl">F</span>
             </div>
             <span className="font-poppins font-bold text-xl text-accent-charcoal">FeastHub</span>
@@ -79,12 +79,36 @@ const Header = () => {
 
                 {user.role === 'customer' && (
                   <>
-                    <Link to="/menu" className={`flex items-center space-x-1 ${isActive('/menu') ? 'text-primary-orange' : 'text-gray-600'} hover:text-primary-orange transition-colors`}>
-                      <span className="font-inter text-sm">Menu</span>
-                    </Link>
-                    <Link to="/restaurants" className={`flex items-center space-x-1 ${isActive('/restaurants') ? 'text-primary-orange' : 'text-gray-600'} hover:text-primary-orange transition-colors`}>
-                      <span className="font-inter text-sm">Restaurants</span>
-                    </Link>
+                    {/* Order Dropdown */}
+                    <div className="relative group">
+                      <button className={`flex items-center space-x-1 ${isActive('/menu') || isActive('/restaurants') ? 'text-primary-orange' : 'text-gray-600'} hover:text-primary-orange transition-colors focus:outline-none`}>
+                        <span className="font-inter text-sm">Order</span>
+                        <svg className="w-4 h-4 ml-1 transform group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                      </button>
+                      <div className="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                                                  <Link to="/menu" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-inter text-sm">
+                                                    Menu
+                                                  </Link>
+                                                  <Link to="/restaurants" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-inter text-sm">
+                                                    Restaurants
+                                                  </Link>                      </div>
+                    </div>
+
+                    {/* Bookings Dropdown */}
+                    <div className="relative group">
+                      <button className={`flex items-center space-x-1 ${isActive('/reservations') || isActive('/book-table') ? 'text-primary-orange' : 'text-gray-600'} hover:text-primary-orange transition-colors focus:outline-none`}>
+                        <span className="font-inter text-sm">Bookings</span>
+                        <svg className="w-4 h-4 ml-1 transform group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                      </button>
+                      <div className="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                                                  <Link to="/reservations" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-inter text-sm">
+                                                    Your Reservations
+                                                  </Link>
+                                                  <Link to="/book-table" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-inter text-sm">
+                                                    Book a Table
+                                                  </Link>                      </div>
+                    </div>
+
                     <Link to="/food-donate" className={`flex items-center space-x-1 ${isActive('/food-donate') ? 'text-primary-orange' : 'text-gray-600'} hover:text-primary-orange transition-colors`}>
                       <span className="font-inter text-sm">Food Donate</span>
                     </Link>
@@ -105,7 +129,7 @@ const Header = () => {
                 )}
 
                 <div className="relative group">
-                  <Link to="/profile" className="flex items-center space-x-2 bg-gradient-orange-yellow text-white px-4 py-2 rounded-full hover:opacity-90 transition-opacity font-inter font-medium">
+                  <Link to="/profile" className="flex items-center space-x-2 bg-gradient-teal-cyan text-white px-4 py-2 rounded-full hover:opacity-90 transition-opacity font-inter font-medium">
                     <User className="w-4 h-4" />
                     <span>{user.name}</span>
                   </Link>
@@ -122,7 +146,7 @@ const Header = () => {
                 </div>
               </>
             ) : (
-              <Link to="/login" className="flex items-center space-x-2 bg-gradient-orange-yellow text-white px-4 py-2 rounded-full hover:opacity-90 transition-opacity font-inter font-medium">
+              <Link to="/login" className="flex items-center space-x-2 bg-gradient-teal-cyan text-white px-4 py-2 rounded-full hover:opacity-90 transition-opacity font-inter font-medium">
                 <User className="w-4 h-4" />
                 <span>Login</span>
               </Link>
@@ -178,22 +202,37 @@ const Header = () => {
                     </Link>
                   )}
                   {user.role === 'customer' && (
-                    <>
-                      <Link to="/menu" className={`flex items-center space-x-1 ${isActive('/menu') ? 'text-primary-orange' : 'text-gray-600'}`}>
-                        <span>Menu</span>
-                      </Link>
-                      <Link to="/food-donate" className={`flex items-center space-x-1 ${isActive('/food-donate') ? 'text-primary-orange' : 'text-gray-600'}`}>
+                    <div className="space-y-2">
+                      {/* Order Links (Mobile) */}
+                      <div className="space-y-1">
+                                              <Link to="/menu" className={`block px-4 py-2 text-gray-700 hover:bg-gray-100 font-inter text-sm ${isActive('/menu') ? 'text-primary-orange bg-gray-100' : ''}`}>
+                                                Menu
+                                              </Link>
+                                              <Link to="/restaurants" className={`block px-4 py-2 text-gray-700 hover:bg-gray-100 font-inter text-sm ${isActive('/restaurants') ? 'text-primary-orange bg-gray-100' : ''}`}>
+                                                Restaurants
+                                              </Link>                      </div>
+
+                      {/* Bookings Links (Mobile) */}
+                      <div className="space-y-1">
+                                              <Link to="/reservations" className={`block px-4 py-2 text-gray-700 hover:bg-gray-100 font-inter text-sm ${isActive('/reservations') ? 'text-primary-orange bg-gray-100' : ''}`}>
+                                                Your Reservations
+                                              </Link>
+                                              <Link to="/book-table" className={`block px-4 py-2 text-gray-700 hover:bg-gray-100 font-inter text-sm ${isActive('/book-table') ? 'text-primary-orange bg-gray-100' : ''}`}>
+                                                Book a Table
+                                              </Link>                      </div>
+
+                      <Link to="/food-donate" className={`flex items-center space-x-1 w-full px-4 py-2 rounded-md ${isActive('/food-donate') ? 'text-primary-orange bg-gray-100' : 'text-gray-600 hover:bg-gray-50'}`}>
                         <span>Food Donate</span>
                       </Link>
-                      <Link to="/favorites" className={`flex items-center space-x-1 ${isActive('/favorites') ? 'text-primary-orange' : 'text-gray-600'}`}>
+                      <Link to="/favorites" className={`flex items-center space-x-1 w-full px-4 py-2 rounded-md ${isActive('/favorites') ? 'text-primary-orange bg-gray-100' : 'text-gray-600 hover:bg-gray-50'}`}>
                         <Heart className="w-5 h-5" />
                         <span>Favorites</span>
                       </Link>
-                      <Link to="/cart" className={`flex items-center space-x-1 ${isActive('/cart') ? 'text-primary-orange' : 'text-gray-600'}`}>
+                      <Link to="/cart" className={`flex items-center space-x-1 w-full px-4 py-2 rounded-md ${isActive('/cart') ? 'text-primary-orange bg-gray-100' : 'text-gray-600 hover:bg-gray-50'}`}>
                         <ShoppingCart className="w-5 h-5" />
                         <span>Cart ({getTotalItems()})</span>
                       </Link>
-                    </>
+                    </div>
                   )}
                 </div>
               )}
@@ -201,12 +240,12 @@ const Header = () => {
               {user ? (
                 <button 
                   onClick={handleLogout}
-                  className="w-full bg-gradient-orange-yellow text-white py-2 rounded-full font-inter font-medium"
+                  className="w-full bg-gradient-teal-cyan text-white py-2 rounded-full font-inter font-medium"
                 >
                   Logout ({user.name})
                 </button>
               ) : (
-                <Link to="/login" className="block w-full bg-gradient-orange-yellow text-white py-2 rounded-full font-inter font-medium text-center">
+                <Link to="/login" className="block w-full bg-gradient-teal-cyan text-white py-2 rounded-full font-inter font-medium text-center">
                   Login / Sign Up
                 </Link>
               )}

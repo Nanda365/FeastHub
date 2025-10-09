@@ -44,6 +44,7 @@ const orderSchema = mongoose.Schema(
     basicItems: [
       {
         dish: { type: String, required: true }, // Using String for basic item ID like 'extra_sauce'
+        name: { type: String, required: true },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
       },
@@ -71,6 +72,11 @@ const orderSchema = mongoose.Schema(
     deliveryPartner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
+    },
+    customOrder: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CustomOrder',
+      required: false,
     },
   },
   {

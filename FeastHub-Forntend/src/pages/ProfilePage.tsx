@@ -156,12 +156,7 @@ const ProfilePage = () => {
                   <p className="text-gray-600 text-sm">Restaurant Request Status</p>
                   <p className="font-inter font-semibold text-lg text-accent-charcoal">{user.restaurantRequestStatus || 'N/A'}</p>
                 </div>
-                {user.restaurantId && (
-                  <div className="flex items-center space-x-4">
-                    <p className="text-gray-600 text-sm">Restaurant ID</p>
-                    <p className="font-inter font-semibold text-lg text-accent-charcoal">{user.restaurantId}</p>
-                  </div>
-                )}
+                
               </div>
             )}
 
@@ -171,12 +166,7 @@ const ProfilePage = () => {
                   <p className="text-gray-600 text-sm">Delivery Request Status</p>
                   <p className="font-inter font-semibold text-lg text-accent-charcoal">{user.deliveryRequestStatus || 'N/A'}</p>
                 </div>
-                {user.deliveryPartnerId && (
-                  <div className="flex items-center space-x-4">
-                    <p className="text-gray-600 text-sm">Delivery Partner ID</p>
-                    <p className="font-inter font-semibold text-lg text-accent-charcoal">{user.deliveryPartnerId}</p>
-                  </div>
-                )}
+                
               </div>
             )}
           </div>
@@ -226,7 +216,7 @@ const ProfilePage = () => {
               <p className="font-inter text-gray-500 text-sm mt-2">Start ordering healthy meals today!</p>
               <Link
                 to="/my-orders"
-                className="mt-4 inline-block bg-gradient-orange-yellow text-white px-6 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                className="mt-4 inline-block bg-gradient-teal-cyan text-white px-6 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
               >
                 View All Orders
               </Link>

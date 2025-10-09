@@ -48,6 +48,9 @@ const DeliveryDashboard = () => {
   const [deliveryOrders, setDeliveryOrders] = useState<OrderData[]>([]);
   const [donations, setDonations] = useState<DonationData[]>([]);
   const [acceptedDonations, setAcceptedDonations] = useState<string[]>([]);
+  const [historyCurrentPage, setHistoryCurrentPage] = useState(1);
+  const [donationsCurrentPage, setDonationsCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const activeDeliveries = deliveryOrders.filter(
     (order) => order.orderStatus === 'ready' || order.orderStatus === 'on-the-way'
@@ -170,6 +173,32 @@ const DeliveryDashboard = () => {
     }
   };
 
+  const handleHistoryNextPage = () => {
+    const totalPages = Math.ceil(completedDeliveries.length / itemsPerPage);
+    if (historyCurrentPage < totalPages) {
+      setHistoryCurrentPage(historyCurrentPage + 1);
+    }
+  };
+
+  const handleHistoryPreviousPage = () => {
+    if (historyCurrentPage > 1) {
+      setHistoryCurrentPage(historyCurrentPage - 1);
+    }
+  };
+
+  const handleDonationsNextPage = () => {
+    const totalPages = Math.ceil(donations.length / itemsPerPage);
+    if (donationsCurrentPage < totalPages) {
+      setDonationsCurrentPage(donationsCurrentPage + 1);
+    }
+  };
+
+  const handleDonationsPreviousPage = () => {
+    if (donationsCurrentPage > 1) {
+      setDonationsCurrentPage(donationsCurrentPage - 1);
+    }
+  };
+
   const handleAcceptDonation = async (donationId: string) => {
     try {
       const config = {
@@ -241,7 +270,7 @@ const DeliveryDashboard = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-3 rounded-xl font-inter font-medium transition-all duration-300 ${
                   activeTab === tab.id
-                    ? 'bg-gradient-orange-yellow text-white shadow-md'
+                    ? 'bg-gradient-teal-cyan text-white shadow-md'
                     : 'text-gray-600 hover:text-accent-charcoal hover:bg-gray-50'
                 }`}
               >
@@ -551,21 +580,55 @@ const DeliveryDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {completedDeliveries.map((order) => (
-                    <tr key={order.orderCode} className="border-b border-gray-100">
-                      <td className="py-4 font-inter font-medium text-accent-charcoal">{order.orderCode}</td>
-                      <td className="py-4 font-inter text-gray-600">{order.user.name}</td>
-                      <td className="py-4 font-inter font-semibold text-accent-charcoal">₹{order.totalPrice.toFixed(2)}</td>
-                      <td className="py-4 font-inter text-gray-600">{order.paymentStatus}</td>
-                      <td className="py-4 font-inter text-sm text-gray-500">{new Date(order.createdAt).toLocaleString()}</td>
-                      <td className="py-4">
-                        <div className="flex items-center space-x-1">
-                          <Star className="w-4 h-4 text-accent-yellow fill-current" />
-                          <span className="font-inter text-sm text-accent-charcoal">4.9</span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {(() => {
+                    const indexOfLastOrder = historyCurrentPage * itemsPerPage;
+                    const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
+                    const currentOrders = completedDeliveries.slice(indexOfFirstOrder, indexOfLastOrder);
+                    const totalPages = Math.ceil(completedDeliveries.length / itemsPerPage);
+
+                    return (
+                      <>
+                        {currentOrders.map((order) => (
+                          <tr key={order.orderCode} className="border-b border-gray-100">
+                            <td className="py-4 font-inter font-medium text-accent-charcoal">{order.orderCode}</td>
+                            <td className="py-4 font-inter text-gray-600">{order.user.name}</td>
+                            <td className="py-4 font-inter font-semibold text-accent-charcoal">₹{order.totalPrice.toFixed(2)}</td>
+                            <td className="py-4 font-inter text-gray-600">{order.paymentStatus}</td>
+                            <td className="py-4 font-inter text-sm text-gray-500">{new Date(order.createdAt).toLocaleString()}</td>
+                            <td className="py-4">
+                              <div className="flex items-center space-x-1">
+                                <Star className="w-4 h-4 text-accent-yellow fill-current" />
+                                <span className="font-inter text-sm text-accent-charcoal">4.9</span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                        <tr>
+                          <td colSpan={6}>
+                            <div className="flex justify-between items-center mt-4">
+                              <button
+                                onClick={handleHistoryPreviousPage}
+                                disabled={historyCurrentPage === 1}
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
+                              >
+                                Previous
+                              </button>
+                              <div>
+                                Page {historyCurrentPage} of {totalPages}
+                              </div>
+                              <button
+                                onClick={handleHistoryNextPage}
+                                disabled={historyCurrentPage === totalPages}
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r"
+                              >
+                                Next
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </>
+                    );
+                  })()}
                 </tbody>
               </table>
             </div>
@@ -592,36 +655,70 @@ const DeliveryDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {donations.map((donation) => (
-                      <tr key={donation._id} className="border-b border-gray-100">
-                        <td className="py-4 font-inter font-medium text-accent-charcoal">{donation.foodItem}</td>
-                        <td className="py-4 font-inter text-gray-600">{donation.quantity}</td>
-                        <td className="py-4 font-inter text-gray-600">{new Date(donation.expirationDate).toLocaleDateString()}</td>
-                        <td className="py-4 font-inter text-gray-600">{donation.contactPhone}</td>
-                        <td className="py-4 font-inter text-gray-600">{donation.status}</td>
-                        <td className="py-4">
-                          {donation.status === 'pending' && !acceptedDonations.includes(donation._id) && (
-                            <button
-                              onClick={() => handleAcceptDonation(donation._id)}
-                              className="bg-primary-green text-white px-4 py-2 rounded-lg font-inter text-sm hover:bg-primary-green/90 transition-colors"
-                            >
-                              Accept
-                            </button>
-                          )}
-                          {(donation.status === 'accepted' || acceptedDonations.includes(donation._id)) && donation.deliveryPartner?._id === user?._id && (
-                            <>
-                              <button
-                                onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(donation.pickupLocation)}`, '_blank')}
-                                className="bg-primary-orange text-white px-4 py-2 rounded-lg font-inter text-sm hover:bg-primary-orange/90 transition-colors flex items-center space-x-1 mt-2"
-                              >
-                                <Navigation className="w-4 h-4" />
-                                <span>Navigate</span>
-                              </button>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {(() => {
+                      const indexOfLastDonation = donationsCurrentPage * itemsPerPage;
+                      const indexOfFirstDonation = indexOfLastDonation - itemsPerPage;
+                      const currentDonations = donations.slice(indexOfFirstDonation, indexOfLastDonation);
+                      const totalPages = Math.ceil(donations.length / itemsPerPage);
+
+                      return (
+                        <>
+                          {currentDonations.map((donation) => (
+                            <tr key={donation._id} className="border-b border-gray-100">
+                              <td className="py-4 font-inter font-medium text-accent-charcoal">{donation.foodItem}</td>
+                              <td className="py-4 font-inter text-gray-600">{donation.quantity}</td>
+                              <td className="py-4 font-inter text-gray-600">{new Date(donation.expirationDate).toLocaleDateString()}</td>
+                              <td className="py-4 font-inter text-gray-600">{donation.contactPhone}</td>
+                              <td className="py-4 font-inter text-gray-600">{donation.status}</td>
+                              <td className="py-4">
+                                {donation.status === 'pending' && !acceptedDonations.includes(donation._id) && (
+                                  <button
+                                    onClick={() => handleAcceptDonation(donation._id)}
+                                    className="bg-primary-green text-white px-4 py-2 rounded-lg font-inter text-sm hover:bg-primary-green/90 transition-colors"
+                                  >
+                                    Accept
+                                  </button>
+                                )}
+                                {(donation.status === 'accepted' || acceptedDonations.includes(donation._id)) && donation.deliveryPartner?._id === user?._id && (
+                                  <>
+                                    <button
+                                      onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(donation.pickupLocation)}`, '_blank')}
+                                      className="bg-primary-orange text-white px-4 py-2 rounded-lg font-inter text-sm hover:bg-primary-orange/90 transition-colors flex items-center space-x-1 mt-2"
+                                    >
+                                      <Navigation className="w-4 h-4" />
+                                      <span>Navigate</span>
+                                    </button>
+                                  </>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                          <tr>
+                            <td colSpan={6}>
+                              <div className="flex justify-between items-center mt-4">
+                                <button
+                                  onClick={handleDonationsPreviousPage}
+                                  disabled={donationsCurrentPage === 1}
+                                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
+                                >
+                                  Previous
+                                </button>
+                                <div>
+                                  Page {donationsCurrentPage} of {totalPages}
+                                </div>
+                                <button
+                                  onClick={handleDonationsNextPage}
+                                  disabled={donationsCurrentPage === totalPages}
+                                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r"
+                                >
+                                  Next
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        </>
+                      );
+                    })()}
                   </tbody>
                 </table>
               </div>

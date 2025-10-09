@@ -77,7 +77,7 @@ const CartPage = () => {
               <p className="font-inter text-gray-600 mb-4">Please log in to purchase food.</p>
               <Link
                 to="/login"
-                className="bg-gradient-orange-yellow text-white px-8 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                className="bg-gradient-teal-cyan text-white px-8 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
               >
                 Login
               </Link>
@@ -86,7 +86,7 @@ const CartPage = () => {
           <div className="flex justify-center space-x-4">
             <Link
               to="/menu"
-              className="bg-gradient-orange-yellow text-white px-8 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+              className="bg-gradient-teal-cyan text-white px-8 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
             >
               Browse Menu
             </Link>
@@ -156,7 +156,7 @@ const CartPage = () => {
                         </p>
                       </div>
                       <button
-                        onClick={() => removeFromCart(item.dish.id)}
+                        onClick={() => removeFromCart(item._id)}
                         className="text-gray-400 hover:text-red-500 transition-colors"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -339,7 +339,7 @@ const CartPage = () => {
               {/* Checkout Button */}
               <button
                 onClick={placeOrderHandler}
-                className="w-full bg-gradient-orange-yellow text-white py-4 rounded-xl font-inter font-semibold text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                className="w-full bg-gradient-teal-cyan text-white py-4 rounded-xl font-inter font-semibold text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300"
               >
                 Proceed to Checkout
               </button>

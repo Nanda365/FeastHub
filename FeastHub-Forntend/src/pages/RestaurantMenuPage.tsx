@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Dish } from '../types/Dish';
-import { Search } from 'lucide-react';
+import { Search, ChefHat } from 'lucide-react';
 import DishCard from '../components/DishCard';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import { toast } from 'react-toastify'; // Keep toast for other uses
 
 interface Restaurant {
   _id: string;
@@ -32,6 +34,7 @@ interface Restaurant {
   isFeatured: boolean;
   menu: string[]; // Array of Dish IDs
   owner: string; // User ID of the restaurant owner
+  hasRecipeBox?: boolean;
 }
 
 const RestaurantMenuPage: React.FC = () => {
@@ -44,6 +47,8 @@ const RestaurantMenuPage: React.FC = () => {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<string>('default');
   const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const { user, token } = useAuth(); // Assuming useAuth provides token
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,7 +122,18 @@ const RestaurantMenuPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-accent-charcoal mb-8">
-        {restaurant ? `${restaurant.name} Menu` : 'Restaurant Menu'}
+        {restaurant ? (
+          <>
+            {restaurant.name} Menu
+            {restaurant.hasRecipeBox && (
+              <span className="ml-4 text-lg bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-semibold">
+                Recipe Box Available!
+              </span>
+            )}
+          </>
+        ) : (
+          'Restaurant Menu'
+        )}
       </h1>
 
       <div className="flex flex-col md:flex-row gap-6 mb-8">
@@ -131,6 +147,17 @@ const RestaurantMenuPage: React.FC = () => {
             onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
+
+        {/* Recipe Box Button */}
+        {restaurant && restaurant.hasRecipeBox && (
+          <button
+            onClick={() => navigate(`/create-recipe?restaurantId=${restaurantId}`)}
+            className="flex items-center gap-2 bg-gradient-teal-cyan text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+          >
+            <ChefHat className="w-5 h-5" />
+            <span className="font-semibold">Recipe Box</span>
+          </button>
+        )}
 
         {/* Filters and Sort (simplified for now) */}
         <div className="flex gap-4">

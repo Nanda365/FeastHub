@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Award, Clock, MapPin, Search, Star, Filter } from 'lucide-react';
+import { Clock, MapPin, Search, Star, Filter, UtensilsCrossed } from 'lucide-react';
 import axios from 'axios';
 
 interface Restaurant {
@@ -26,6 +26,7 @@ interface Restaurant {
   owner: string; // User ID of the restaurant owner
   rating?: number; // Added optional rating as used in sorting
   deliveryTime?: string; // Added optional deliveryTime as used in sorting
+  hasRecipeBox?: boolean;
 }
 
 const RestaurantsPage = () => {
@@ -74,7 +75,7 @@ const RestaurantsPage = () => {
   const filteredRestaurants = restaurants.filter((restaurant) => {
     const matchesSearch =
       restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      restaurant.cuisine.toLowerCase().includes(searchQuery.toLowerCase());
+      restaurant.cuisine.some(c => c.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesCuisine =
       selectedCuisine === 'all' || (Array.isArray(restaurant.cuisine) && restaurant.cuisine.some(c => c.toLowerCase().includes(selectedCuisine)));
@@ -226,7 +227,14 @@ const RestaurantsPage = () => {
                 <div className="p-6 flex flex-col justify-between flex-grow">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-poppins font-bold text-xl text-accent-charcoal">{restaurant.name}</h3>
+                      <Link to={`/menu/${restaurant._id}`}>
+                        <h3 className="font-poppins font-bold text-xl text-accent-charcoal">{restaurant.name}</h3>
+                      </Link>
+                      {restaurant.hasRecipeBox && (
+                        <span className="ml-2 bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center space-x-1">
+                          <UtensilsCrossed className="w-3 h-3" /> <span>Recipe Box</span>
+                        </span>
+                      )}
                       <div className="flex items-center text-primary-orange">
                           <Star className="w-5 h-5 fill-current mr-1" />
                           <span className="font-inter font-semibold">4.9</span>
@@ -259,7 +267,7 @@ const RestaurantsPage = () => {
                   <div className="flex space-x-3 mt-auto">
                     <Link
                       to={`/menu/${restaurant._id}`}
-                      className="flex-1 bg-gradient-orange-yellow text-white py-3 rounded-xl font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 text-center"
+                      className="flex-1 bg-gradient-teal-cyan text-white py-3 rounded-xl font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 text-center"
                     >
                       View Menu
                     </Link>

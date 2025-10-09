@@ -1,3 +1,4 @@
+console.log('Server file loaded.');
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -9,6 +10,10 @@ import favoriteRoutes from './Routes/favoriteRoutes.js';
 import orderRoutes from './Routes/orderRoutes.js';
 import paymentRoutes from './Routes/paymentRoutes.js';
 import donationRoutes from './Routes/donationRoutes.js';
+import customOrderRoutes from './Routes/customOrderRoutes.js';
+import * as tableRoutesModule from './Routes/tableRoutes.js';
+import * as reservationRoutesModule from './Routes/reservationRoutes.js';
+import errorHandler from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -22,12 +27,19 @@ app.use(express.json());
 
 // Route mounting
 app.use('/api/users', userRoutes);
-app.use('/api/users/favorites', favoriteRoutes);
+app.use('/api/favorites', favoriteRoutes);
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/dishes', dishRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/donations', donationRoutes);
+app.use('/api/custom-orders', customOrderRoutes);
+app.use('/api/tables', tableRoutesModule.default);
+app.use('/api/reservations', reservationRoutesModule.default);
+
+app.get('/api/test', (req, res) => {
+  res.send('Test route works!');
+});
 
 // Database connection
 mongoose.connect(process.env.MONGO_URI)
@@ -35,14 +47,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error(err));
 
 // Centralized error handling middleware
-app.use((err, req, res, next) => {
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  res.status(statusCode);
-  res.json({
-    message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
-  });
-});
+app.use(errorHandler);
 
 // Launch the server on desired port
 const PORT = process.env.PORT || 5000;

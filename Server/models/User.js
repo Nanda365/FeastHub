@@ -58,6 +58,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    verificationCode: {
+      type: String,
+      default: null,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
     cart: [
       {
         dish: {
@@ -76,6 +84,14 @@ const userSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Dish',
+      },
+    ],
+    deliveryAddress: [
+      {
+        address: { type: String, required: true },
+        city: { type: String, required: true },
+        pincode: { type: String, required: true },
+        phone: { type: String, required: true },
       },
     ],
   },

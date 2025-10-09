@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Link } from 'react-router-dom';
 import { Sparkles, Leaf, Heart } from 'lucide-react';
 
@@ -16,7 +16,7 @@ const Hero = () => {
             
             <h1 className="font-poppins font-bold text-4xl sm:text-5xl lg:text-6xl text-accent-charcoal leading-tight mb-6">
               Healthy Food
-              <span className="bg-gradient-orange-yellow bg-clip-text text-transparent block">
+              <span className="bg-gradient-teal-cyan bg-clip-text text-transparent block">
                 Delivered Fresh
               </span>
             </h1>
@@ -28,12 +28,12 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-              <Link to="/menu" className="w-full sm:w-auto bg-gradient-orange-yellow text-white px-8 py-4 rounded-full font-inter font-semibold text-lg hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-center">
+              <Link to="/menu" className="w-full sm:w-auto bg-gradient-teal-cyan text-white px-8 py-4 rounded-full font-inter font-semibold text-lg hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-center">
                 Order Now
               </Link>
               
-              <Link to="/menu" className="w-full sm:w-auto border-2 border-primary-orange text-primary-orange px-8 py-4 rounded-full font-inter font-semibold text-lg hover:bg-primary-orange hover:text-white transition-all duration-300 text-center">
-                Explore Menu
+              <Link to="/book-table" className="w-full sm:w-auto border-2 border-primary-orange text-primary-orange px-8 py-4 rounded-full font-inter font-semibold text-lg hover:bg-primary-orange hover:text-white transition-all duration-300 text-center">
+                Book a Table
               </Link>
             </div>
 
@@ -81,7 +81,7 @@ const Hero = () => {
             </div>
             
             {/* Background Decoration */}
-            <div className="absolute inset-0 bg-gradient-orange-yellow opacity-10 rounded-3xl transform rotate-6 scale-105"></div>
+            <div className="absolute inset-0 bg-gradient-teal-cyan opacity-10 rounded-3xl transform rotate-6 scale-105"></div>
           </div>
         </div>
       </div>

@@ -133,7 +133,7 @@ const CheckoutPage = () => {
           </h2>
           <Link
             to="/menu"
-            className="bg-gradient-orange-yellow text-white px-8 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+            className="bg-gradient-teal-cyan text-white px-8 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
           >
             Browse Menu
           </Link>
@@ -409,7 +409,7 @@ const CheckoutPage = () => {
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  className="w-full bg-gradient-orange-yellow text-white py-4 rounded-xl font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full bg-gradient-teal-cyan text-white py-4 rounded-xl font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {isProcessing ? 'Processing Order...' : `Place Order - ₹${total.toFixed(2)}`}
                 </button>

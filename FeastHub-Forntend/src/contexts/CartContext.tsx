@@ -13,7 +13,7 @@ interface CartItem {
 interface CartContextType {
   items: CartItem[];
   addToCart: (dish: Dish, quantity?: number, customizations?: string[]) => Promise<void>;
-  removeFromCart: (dishId: string) => Promise<void>;
+  removeFromCart: (itemId: string) => Promise<void>;
   updateQuantity: (dishId: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
   getTotalItems: () => number;
@@ -100,7 +100,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const removeFromCart = async (dishId: string) => {
+  const removeFromCart = async (itemId: string) => {
     if (!user || !token) return;
 
     try {
@@ -110,9 +110,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           Authorization: `Bearer ${token}`,
         },
       };
-      const { data } = await axios.put(
-        'http://localhost:5000/api/users/cart',
-        { dishId, quantity: 0 }, // Send quantity 0 to indicate removal
+      const { data } = await axios.delete(
+        `http://localhost:5000/api/users/cart/${itemId}`,
         config
       );
       setItems(data.map((item: any) => {
@@ -129,11 +128,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateQuantity = async (dishId: string, quantity: number) => {
+  const updateQuantity = async (itemId: string, quantity: number) => {
     if (!user || !token) return;
 
     if (quantity <= 0) {
-      await removeFromCart(dishId);
+      await removeFromCart(itemId);
       return;
     }
 
@@ -146,9 +145,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
 
   
+      const item = items.find(i => i._id === itemId);
+      if (!item) return;
+
       const response = await axios.put(
           'http://localhost:5000/api/users/cart',
-          { dishId, quantity },
+          { dishId: item.dish._id, quantity },
           config
         );
         console.log('Axios PUT response:', response);

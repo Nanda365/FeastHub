@@ -1,4 +1,5 @@
 import Order from '../models/Order.js';
+import CustomOrder from '../models/CustomOrder.js';
 import Dish from '../models/Dish.js';
 import Restaurant from '../models/Restaurant.js';
 import asyncHandler from '../middleware/asyncHandler.js';
@@ -70,12 +71,12 @@ const createOrder = asyncHandler(async (req, res) => {
     // Update restaurant stats
     const restaurant = await Restaurant.findById(matchOrderItems[0].restaurant);
     if (restaurant) {
-      console.log('Restaurant stats before update:', restaurant.totalOrders, restaurant.totalRevenue);
+      
       restaurant.totalOrders += 1;
       restaurant.totalRevenue += calculatedTotalPrice;
-      console.log('Restaurant stats after update (before save):', restaurant.totalOrders, restaurant.totalRevenue);
+      
       await restaurant.save();
-      console.log('Restaurant stats saved successfully.');
+      
     }
 
     res.status(201).json(createdOrder);
@@ -85,7 +86,7 @@ const createOrder = asyncHandler(async (req, res) => {
 const getOrderById = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate(
     'user',
-    'name email'
+    'name email phone'
   );
 
   if (order) {
@@ -102,7 +103,7 @@ const getOrderById = asyncHandler(async (req, res) => {
 const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 }).populate(
     'user',
-    'name email'
+    'name email phone'
   ).populate('orderItems.dish', 'name imageUrl');
   res.json(orders);
 });
@@ -123,7 +124,7 @@ const getDeliveryPartnerOrders = asyncHandler(async (req, res) => {
       },
     ],
   }).sort({ createdAt: -1 })
-    .populate('user', 'name email')
+    .populate('user', 'name email phone')
     .populate('restaurant', 'name address phone')
     .populate('orderItems.dish', 'name imageUrl')
     .populate('deliveryPartner', 'name');
@@ -138,11 +139,11 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   const { orderStatus } = req.body;
   const orderId = req.params.id;
 
-  console.log(`Attempting to update order ${orderId} to status: ${orderStatus}`);
+  
 
   try {
     const order = await Order.findById(orderId);
-    console.log('Order retrieved from DB:', order);
+    
 
     if (order) {
       // Basic authorization: ensure the user is either the restaurant owner
@@ -162,7 +163,6 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
       res.status(404).json({ message: 'Order not found' });
     }
   } catch (error) {
-    console.error('Error updating order status:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -172,10 +172,48 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 // @access  Private (Admin only)
 const getAllOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({}).sort({ createdAt: -1 })
-    .populate('user', 'name email')
+    .populate('user', 'name email phone')
     .populate('restaurant', 'name address')
     .populate('orderItems.dish', 'name imageUrl');
   res.json(orders);
 });
 
-export { createOrder, getOrderById, getMyOrders, getDeliveryPartnerOrders, updateOrderStatus, getAllOrders };
+// @desc    Get orders for a specific restaurant
+// @route   GET /api/orders/restaurant/:restaurantId
+// @access  Private (Restaurant owner)
+const getRestaurantOrders = asyncHandler(async (req, res) => {
+  const { restaurantId } = req.params;
+
+  // Find the restaurant and check if the logged-in user is the owner
+  const restaurant = await Restaurant.findById(restaurantId);
+
+  if (!restaurant) {
+    res.status(404);
+    throw new Error('Restaurant not found');
+  }
+
+  if (restaurant.owner.toString() !== req.user._id.toString()) {
+    res.status(401);
+    throw new Error('User not authorized to access these orders');
+  }
+
+  // Fetch both regular and custom orders
+  const regularOrders = await Order.find({ restaurant: restaurantId })
+    .populate('user', 'name email phone');
+
+  let customOrders = [];
+  if (restaurant.hasRecipeBox) {
+    customOrders = await CustomOrder.find({ restaurant: restaurantId })
+      .sort({ createdAt: -1 })
+      .populate('user', 'name email phone');
+  }
+
+  // Combine and sort all orders by creation date
+  const allOrders = [...regularOrders, ...customOrders].sort(
+    (a, b) => b.createdAt - a.createdAt
+  );
+
+  res.json(allOrders);
+});
+
+export { createOrder, getOrderById, getMyOrders, getDeliveryPartnerOrders, updateOrderStatus, getAllOrders, getRestaurantOrders };

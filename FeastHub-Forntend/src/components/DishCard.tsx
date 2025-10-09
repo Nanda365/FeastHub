@@ -30,7 +30,7 @@ const DishCard: React.FC<DishCardProps> = ({ dish, showAddButton = true, restaur
             },
           };
           // Assuming an API endpoint to check if a dish is favorited by the user
-          const response = await axios.get(`http://localhost:5000/api/users/favorites/${dish._id}`, config);
+          const response = await axios.get(`http://localhost:5000/api/favorites/${dish._id}`, config);
           setIsFavorite(response.data.isFavorite);
         } catch (error) {
           console.error('Error checking favorite status:', error);
@@ -54,7 +54,7 @@ const DishCard: React.FC<DishCardProps> = ({ dish, showAddButton = true, restaur
 
   const getHealthBadgeColor = (healthGoal: string) => {
     const colors: { [key: string]: string } = {
-      'balanced-diet': 'bg-primary-orange text-white',
+      'balanced-diet': 'bg-primary-orange text-accent-charcoal',
       'heart-healthy': 'bg-red-100 text-red-800',
       'weight-loss': 'bg-purple-100 text-purple-800',
       'muscle-gain': 'bg-blue-100 text-blue-800',
@@ -78,11 +78,11 @@ const DishCard: React.FC<DishCardProps> = ({ dish, showAddButton = true, restaur
       };
       if (isFavorite) {
         // Remove from favorites
-        await axios.delete(`http://localhost:5000/api/users/favorites/${dish._id}`, config);
+        await axios.delete(`http://localhost:5000/api/favorites/${dish._id}`, config);
         toast.success('Removed from favorites!');
       } else {
         // Add to favorites
-        await axios.post(`http://localhost:5000/api/users/favorites`, { dishId: dish._id }, config);
+        await axios.post(`http://localhost:5000/api/favorites`, { dishId: dish._id }, config);
         toast.success('Added to favorites!');
       }
       setIsFavorite(!isFavorite); // Toggle local state
@@ -202,7 +202,7 @@ const DishCard: React.FC<DishCardProps> = ({ dish, showAddButton = true, restaur
           {showAddButton && (
             <button 
               onClick={() => addToCart(dish)}
-              className="bg-gradient-orange-yellow text-white p-3 rounded-full hover:shadow-lg transform hover:scale-110 transition-all duration-300"
+              className="bg-gradient-teal-cyan text-white p-3 rounded-full hover:shadow-lg transform hover:scale-110 transition-all duration-300"
             >
               <Plus className="w-5 h-5" />
             </button>

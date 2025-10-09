@@ -28,7 +28,7 @@ const FavoritesPage: React.FC = () => {
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get<Dish[]>('http://localhost:5000/api/users/favorites', config);
+        const response = await axios.get<Dish[]>('http://localhost:5000/api/favorites', config);
         setFavoriteDishes(response.data);
       } catch (err) {
         if (axios.isAxiosError(err)) {
@@ -73,7 +73,7 @@ const FavoritesPage: React.FC = () => {
             </p>
             <Link
               to="/menu"
-              className="bg-gradient-orange-yellow text-white px-8 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+              className="bg-gradient-teal-cyan text-white px-8 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
             >
               Browse Menu
             </Link>

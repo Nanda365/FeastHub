@@ -294,7 +294,7 @@ const DishModal: React.FC<DishModalProps> = ({
             )}
             <button
               type="submit"
-              className="bg-gradient-orange-yellow text-white px-4 py-2 rounded-md hover:shadow-lg transition-shadow"
+              className="bg-gradient-teal-cyan text-white px-4 py-2 rounded-md hover:shadow-lg transition-shadow"
             >
               {dish ? 'Save Changes' : 'Add Dish'}
             </button>

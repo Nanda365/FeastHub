@@ -19,7 +19,17 @@ const createRestaurantRequest = async (req, res) => {
     // Check if a request already exists for this user
     const existingRequest = await RestaurantRequest.findOne({ userId });
     if (existingRequest) {
-      return res.status(400).json({ message: 'A restaurant request already exists for this user.' });
+      // If a request exists, check its status
+      if (existingRequest.status === 'rejected') {
+        // If the request was rejected, allow the user to submit a new one
+        // by first deleting the old one.
+        await RestaurantRequest.findByIdAndDelete(existingRequest._id);
+      } else {
+        // If the request is pending or approved, prevent a new one
+        return res.status(400).json({
+          message: `You already have a ${existingRequest.status} restaurant request.`,
+        });
+      }
     }
 
     const restaurantRequest = await RestaurantRequest.create({

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Search, Filter, Star, Clock, Plus, Heart } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Search, Filter, Star, Clock, Plus, Heart, ChefHat } from 'lucide-react';
 import DishCard from '../components/DishCard';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { Dish, Restaurant } from '../types';
 import { dietFilters, healthGoalFilters } from '../utils/data';
@@ -18,19 +19,25 @@ const MenuPage = () => {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const { restaurantId } = useParams<{ restaurantId: string }>();
   const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const { user, token } = useAuth(); // Assuming useAuth provides token
 
   useEffect(() => {
-    const fetchDishes = async () => {
+    const fetchDishesAndRestaurant = async () => {
       try {
         setLoading(true);
         setError(null);
         let url = 'http://localhost:5000/api/dishes/random';
+        let currentRestaurant: Restaurant | null = null;
+
         if (restaurantId) {
           // Fetch restaurant details
           const restaurantResponse = await axios.get<Restaurant>(`http://localhost:5000/api/restaurants/${restaurantId}`);
-          setRestaurant(restaurantResponse.data);
+          currentRestaurant = restaurantResponse.data;
+          setRestaurant(currentRestaurant);
           url = `http://localhost:5000/api/restaurants/${restaurantId}/dishes`;
         }
+
         const response = await axios.get<Dish[]>(url);
         setDishes(response.data);
       } catch (err) {
@@ -41,7 +48,7 @@ const MenuPage = () => {
       }
     };
 
-    fetchDishes();
+    fetchDishesAndRestaurant();
   }, [restaurantId]);
 
   const allFilters = [...dietFilters, ...healthGoalFilters];
@@ -123,6 +130,15 @@ const MenuPage = () => {
                 <h2 className="font-poppins font-semibold text-xl text-accent-charcoal">
                   Filters
                 </h2>
+                {restaurant && restaurant.hasRecipeBox && (
+                  <button
+                    onClick={() => navigate(`/create-recipe?restaurantId=${restaurantId}`)}
+                    className="hidden lg:flex items-center gap-2 bg-gradient-to-r from-primary-orange to-primary-red text-white px-4 py-2 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+                  >
+                    <ChefHat className="w-5 h-5" />
+                    <span className="font-semibold">Recipe Box</span>
+                  </button>
+                )}
                 <button
                   onClick={() => setShowFilters(!showFilters)}
                   className="lg:hidden text-primary-orange"
@@ -215,6 +231,13 @@ const MenuPage = () => {
               </div>
             </div>
 
+            {/* Recipe Box Information */}
+            <div className="bg-blue-50 p-4 rounded-lg shadow-sm mb-8 text-center">
+              <p className="font-inter text-blue-800 text-md">
+                Looking for something unique? Some restaurants offer a "Recipe Box" feature, allowing you to customize your own dishes! Look for the <span className="font-semibold">Recipe Box badge</span> next to restaurant names.
+              </p>
+            </div>
+
             {/* Dishes Grid */}
             {loading ? (
               <div className="text-center text-lg font-inter text-gray-600">Loading dishes...</div>
@@ -247,6 +270,7 @@ const MenuPage = () => {
           </div>
         </div>
       </div>
+
     </div>
   );
 };

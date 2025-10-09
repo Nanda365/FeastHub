@@ -5,6 +5,7 @@ import Restaurant from '../models/Restaurant.js';
 import Dish from '../models/Dish.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import sendEmail from '../utils/sendEmail.js';
 
 // @desc    Register a new user
 // @route   POST /api/users/register
@@ -19,9 +20,11 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    if (email.toLowerCase().trim() === 'admin@festhub.com') {
+    if (email.toLowerCase().trim() === 'admin@feasthub.com') {
       role = 'admin';
     }
+
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     const user = await User.create({
       name,
@@ -31,17 +34,34 @@ const registerUser = async (req, res) => {
       role,
       agreeToTerms,
       isAdmin: role === 'admin' ? true : false,
+      verificationCode,
     });
 
     if (user) {
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        token: generateToken(user._id),
-      });
+      const message = `<h1>Welcome to FeastHub!</h1>
+        <p>Please use the following code to verify your account:</p>
+        <h2>${user.verificationCode}</h2>
+        <p>This code is valid for 10 minutes.</p>`;
+
+      try {
+        await sendEmail({
+          email: user.email,
+          subject: 'FeastHub Account Verification',
+          message,
+        });
+        res.status(201).json({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          token: generateToken(user._id),
+          message: 'Verification code sent to your email.',
+        });
+      } catch (emailError) {
+        console.error('Error sending verification email:', emailError);
+        res.status(500).json({ message: 'Error sending verification email.' });
+      }
     } else {
       res.status(400).json({ message: 'Invalid user data' });
     }
@@ -61,9 +81,19 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email }).select('+phone');
 
     if (user && (await user.comparePassword(password))) {
+      if (!user.isVerified) {
+        return res.status(401).json({ message: 'Please verify your account first.' });
+      }
       if (user.role !== role) {
         res.status(401).json({ message: 'Invalid role selected for this user.' });
         return;
+      }
+      if (user.role === 'restaurant') {
+        const restaurant = await Restaurant.findById(user.restaurantId);
+        if (restaurant && restaurant.isBlocked) {
+          res.status(401).json({ message: 'Your restaurant account has been blocked. Please contact support.' });
+          return;
+        }
       }
       res.json({
         _id: user._id,
@@ -175,7 +205,7 @@ const deleteUser = async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (user) {
-      await user.remove();
+      await user.deleteOne();
       res.json({ message: 'User removed' });
     } else {
       res.status(404).json({ message: 'User not found' });
@@ -351,7 +381,7 @@ const updateCart = async (req, res) => {
 
     if (user) {
       const itemIndex = user.cart.findIndex(
-        (item) => item._id.toString() === dishId // Corrected line
+        (item) => item.dish.toString() === dishId
       );
 
       if (itemIndex > -1) {
@@ -397,12 +427,250 @@ const clearUserCart = async (req, res) => {
   }
 };
 
+// @desc    Verify user account
+// @route   POST /api/users/verify
+// @access  Public
+const verifyUser = async (req, res) => {
+  const { email, verificationCode } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: 'User already verified' });
+    }
+
+    if (user.verificationCode !== verificationCode) {
+      return res.status(400).json({ message: 'Invalid verification code' });
+    }
+
+    user.isVerified = true;
+    user.verificationCode = undefined; // Clear the verification code after successful verification
+    await user.save();
+
+    res.status(200).json({ message: 'Account verified successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Remove item from user's cart
+// @route   DELETE /api/users/cart/:itemId
+// @access  Private
+const removeCartItem = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      const itemIndex = user.cart.findIndex(
+        (item) => item._id.toString() === req.params.itemId
+      );
+
+      if (itemIndex > -1) {
+        user.cart.splice(itemIndex, 1);
+        await user.save();
+        await user.populate('cart.dish');
+        res.status(200).json(user.cart);
+      } else {
+        res.status(404).json({ message: 'Item not found in cart' });
+      }
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Resend verification code
+// @route   POST /api/users/resend-verification
+// @access  Public
+const resendVerificationCode = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: 'User already verified' });
+    }
+
+    const newVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    user.verificationCode = newVerificationCode;
+    await user.save();
+
+    const message = `<h1>Welcome to FeastHub!</h1>
+      <p>Your new verification code is:</p>
+      <h2>${newVerificationCode}</h2>
+      <p>This code is valid for 10 minutes.</p>`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'FeastHub Account Verification (Resend)',
+        message,
+      });
+      res.status(200).json({ message: 'New verification code sent to your email.' });
+    } catch (emailError) {
+      console.error('Error sending verification email:', emailError);
+      res.status(500).json({ message: 'Error sending new verification email.' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get all users
+// @route   GET /api/users
+// @access  Private/Admin
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).select('-password');
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get user by ID
+// @route   GET /api/users/:id
+// @access  Private/Admin
+const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update user role
+// @route   PUT /api/users/:id/role
+// @access  Private/Admin
+const updateUserRole = async (req, res) => {
+  const { role } = req.body;
+
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+      user.role = role || user.role;
+      await user.save();
+      res.status(200).json({ message: 'User role updated successfully' });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+// @desc    Get user addresses
+// @route   GET /api/users/addresses
+// @access  Private
+const getUserAddresses = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      res.json(user.deliveryAddress);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Add a new address
+// @route   POST /api/users/addresses
+// @access  Private
+const addUserAddress = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      const { address, city, pincode, phone } = req.body;
+      const newAddress = { address, city, pincode, phone };
+      user.deliveryAddress.push(newAddress);
+      await user.save();
+      res.status(201).json(newAddress);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update an address
+// @route   PUT /api/users/addresses/:id
+// @access  Private
+const updateUserAddress = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      const address = user.deliveryAddress.id(req.params.id);
+      if (address) {
+        address.address = req.body.address || address.address;
+        address.city = req.body.city || address.city;
+        address.pincode = req.body.pincode || address.pincode;
+        address.phone = req.body.phone || address.phone;
+        await user.save();
+        res.json(address);
+      } else {
+        res.status(404).json({ message: 'Address not found' });
+      }
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Delete an address
+// @route   DELETE /api/users/addresses/:id
+// @access  Private
+const deleteUserAddress = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      const address = user.deliveryAddress.id(req.params.id);
+      if (address) {
+        address.remove();
+        await user.save();
+        res.json({ message: 'Address removed' });
+      } else {
+        res.status(404).json({ message: 'Address not found' });
+      }
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
 };
+
 
 export {
   registerUser,
@@ -417,4 +685,14 @@ updateUserProfile,
   getCart,
   updateCart,
   clearUserCart,
+  removeCartItem,
+  verifyUser,
+  resendVerificationCode,
+  getAllUsers,
+  getUserById,
+  updateUserRole,
+  getUserAddresses,
+  addUserAddress,
+  updateUserAddress,
+  deleteUserAddress,
 };

@@ -64,7 +64,7 @@ const OrderSuccessPage = () => {
           </h2>
           <Link
             to="/menu"
-            className="bg-gradient-orange-yellow text-white px-8 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+            className="bg-gradient-teal-cyan text-white px-8 py-3 rounded-full font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
           >
             Browse Menu
           </Link>
@@ -219,7 +219,7 @@ const OrderSuccessPage = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               to="/my-orders"
-              className="flex-1 bg-gradient-orange-yellow text-white py-4 rounded-xl font-inter font-semibold text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+              className="flex-1 bg-gradient-teal-cyan text-white py-4 rounded-xl font-inter font-semibold text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300"
             >
               Track Order
             </Link>

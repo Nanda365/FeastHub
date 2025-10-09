@@ -34,4 +34,20 @@ const admin = (req, res, next) => {
   }
 };
 
-export { protect, admin };
+const restaurant = (req, res, next) => {
+  if (req.user && req.user.role === 'restaurant') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Not authorized as a restaurant owner' });
+  }
+};
+
+const customer = (req, res, next) => {
+  if (req.user && req.user.role === 'customer') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Not authorized as a customer' });
+  }
+};
+
+export { protect, admin, restaurant, customer };

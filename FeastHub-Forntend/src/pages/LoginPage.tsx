@@ -27,7 +27,7 @@ const LoginPage = () => {
   const emailWatch = watch('email');
 
   useEffect(() => {
-    if (emailWatch && emailWatch.toLowerCase() === 'admin@festhub.com') {
+    if (emailWatch && emailWatch.toLowerCase() === 'admin@feasthub.com') {
       setIsAdminEmail(true);
       setValue('role', 'admin');
     } else {
@@ -69,7 +69,11 @@ const LoginPage = () => {
         }
       }
     } catch (error: any) {
-      setError(error.response?.data?.message || 'An error occurred during login');
+      const errorMessage = error.response?.data?.message || 'An error occurred during login';
+      setError(errorMessage);
+      if (errorMessage.includes('verify your account')) {
+        setShowVerificationLink(true);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -80,6 +84,8 @@ const LoginPage = () => {
     { value: 'restaurant', label: 'Restaurant Partner', description: 'Manage your restaurant' },
     { value: 'delivery', label: 'Delivery Partner', description: 'Deliver orders' },
   ];
+
+  const [showVerificationLink, setShowVerificationLink] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background-cream via-white to-background-gray flex items-center justify-center p-4">
@@ -98,7 +104,7 @@ const LoginPage = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-12 h-12 bg-gradient-orange-yellow rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-teal-cyan rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-2xl">F</span>
               </div>
               <span className="font-poppins font-bold text-2xl text-accent-charcoal">FeastHub</span>
@@ -110,6 +116,13 @@ const LoginPage = () => {
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative mb-6" role="alert">
               <span className="block sm:inline">{error}</span>
+              {showVerificationLink && (
+                <div className="mt-2 text-center">
+                  <Link to={`/verify?email=${emailWatch}`} className="font-medium text-primary-orange hover:text-primary-orange/80">
+                    Click here to verify your account
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 
@@ -210,7 +223,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-orange-yellow text-white py-3 rounded-xl font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-teal-cyan text-white py-3 rounded-xl font-inter font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
             </button>

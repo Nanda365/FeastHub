@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
@@ -10,6 +9,7 @@ import ScrollToTop from './components/ScrollToTop';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import VerificationPage from './pages/VerificationPage';
 import MenuPage from './pages/MenuPage';
 import FavoritesPage from './pages/FavoritesPage'; // Import FavoritesPage
 import RestaurantMenuPage from './pages/RestaurantMenuPage';
@@ -46,6 +46,9 @@ import DeliveryDashboard from './pages/delivery/DeliveryDashboard';
 import DeliveryOnboardingPage from './pages/delivery/DeliveryOnboardingPage';
 import NotFoundPage from './pages/NotFoundPage';
 import FoodDonatePage from './pages/FoodDonatePage';
+import CreateRecipePage from './pages/CreateRecipePage';
+import UserReservationsPage from './pages/UserReservationsPage';
+import TableBookingPage from './pages/TableBookingPage';
 
 function App() {
   return (
@@ -60,6 +63,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/verify" element={<VerificationPage />} />
                 <Route path="/menu" element={<MenuPage />} />
                 <Route path="/menu/:restaurantId" element={<RestaurantMenuPage />} />
                 <Route path="/restaurants" element={<RestaurantsPage />} />
@@ -67,33 +71,53 @@ function App() {
                 
                 {/* Protected Customer Routes */}
                 <Route path="/favorites" element={
-                  <ProtectedRoute requiredRole="customer">
+                  <ProtectedRoute requiredRole={["customer"]}>
                     <FavoritesPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/cart" element={
-                  <ProtectedRoute requiredRole="customer">
+                  <ProtectedRoute requiredRole={["customer"]}>
                     <CartPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/checkout" element={
-                  <ProtectedRoute requiredRole="customer">
+                  <ProtectedRoute requiredRole={["customer"]}>
                     <CheckoutPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/order-success" element={
-                  <ProtectedRoute requiredRole="customer">
+                  <ProtectedRoute requiredRole={["customer"]}>
                     <OrderSuccessPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/profile" element={
-                  <ProtectedRoute requiredRole="customer">
+                  <ProtectedRoute requiredRole={["customer", "restaurant", "delivery"]}>
                     <ProfilePage />
                   </ProtectedRoute>
                 } />
                 <Route path="/my-orders" element={
-                  <ProtectedRoute requiredRole="customer">
+                  <ProtectedRoute requiredRole={["customer"]}>
                     <OrdersPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/reservations" element={
+                  <ProtectedRoute requiredRole={["customer"]}>
+                    <UserReservationsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/create-recipe" element={
+                  <ProtectedRoute requiredRole={["customer"]}>
+                    <CreateRecipePage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/book-table" element={
+                  <ProtectedRoute requiredRole={["customer"]}>
+                    <TableBookingPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/book-table/:restaurantId" element={
+                  <ProtectedRoute requiredRole={["customer"]}>
+                    <TableBookingPage />
                   </ProtectedRoute>
                 } />
 
@@ -115,7 +139,7 @@ function App() {
                 
                 {/* Admin Routes */}
                 <Route path="/admin/*" element={
-                  <ProtectedRoute requiredRole="admin">
+                  <ProtectedRoute requiredRole={["admin"]}>
                     <Routes> {/* Nested Routes for admin */}
                       <Route path="dashboard" element={<AdminDashboard />} />
                       <Route path="restaurants" element={<RestaurantListPage />} />
@@ -126,24 +150,24 @@ function App() {
                 
                 {/* Restaurant Routes */}
                 <Route path="/restaurant/onboarding" element={
-                  <ProtectedRoute requiredRole="restaurant">
+                  <ProtectedRoute requiredRole={["restaurant"]}>
                     <RestaurantOnboardingPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/restaurant/*" element={
-                  <ProtectedRoute requiredRole="restaurant">
+                  <ProtectedRoute requiredRole={["restaurant"]}>
                     <RestaurantDashboard />
                   </ProtectedRoute>
                 } />
                 
                 {/* Delivery Routes */}
                 <Route path="/delivery/onboarding" element={
-                  <ProtectedRoute requiredRole="delivery">
+                  <ProtectedRoute requiredRole={["delivery"]}>
                     <DeliveryOnboardingPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/delivery/*" element={
-                  <ProtectedRoute requiredRole="delivery">
+                  <ProtectedRoute requiredRole={["delivery"]}>
                     <DeliveryDashboard />
                   </ProtectedRoute>
                 } />

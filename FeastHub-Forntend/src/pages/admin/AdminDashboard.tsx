@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Store, Truck, TrendingUp, DollarSign, Package, Star, Activity, CheckCircle, XCircle } from 'lucide-react';
+import { Users, Store, Truck, TrendingUp, DollarSign, Package, Star, Activity, CheckCircle, XCircle, Utensils, UserCog } from 'lucide-react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from '../../contexts/AuthContext';
 import RequestModal from '../../components/RequestModal';
+import ManageRestaurants from './ManageRestaurants';
+import ManageDishes from './ManageDishes';
+import ManageUsers from './ManageUsers';
 
 interface RestaurantRequest {
   _id: string;
@@ -64,6 +67,7 @@ const AdminDashboard = () => {
   const [activeRestaurantsCount, setActiveRestaurantsCount] = useState(0);
   const [deliveryPartnersCount, setDeliveryPartnersCount] = useState(0);
   const [orders, setOrders] = useState<OrderData[]>([]);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'restaurants' | 'dishes' | 'users'>('dashboard');
 
   const pendingRestaurantRequests = restaurantRequests.filter(req => req.status === 'pending');
   const pendingDeliveryRequests = deliveryRequests.filter(req => req.status === 'pending');
@@ -289,194 +293,239 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {stats.map((stat, index) => {
-            const IconComponent = stat.icon;
-            const isClickable = stat.title === 'Active Restaurants' || stat.title === 'Delivery Partners';
-            const linkPath = stat.title === 'Active Restaurants' ? '/admin/restaurants' : stat.title === 'Delivery Partners' ? '/admin/delivery-partners' : '#';
-
-            const content = (
-              <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center`}>
-                    <IconComponent className="w-6 h-6 text-white" />
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-inter font-medium ${
-                    stat.change.startsWith('+') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {stat.change}
-                  </span>
-                </div>
-                <h3 className="font-inter text-gray-600 text-sm mb-1">{stat.title}</h3>
-                <p className="font-poppins font-bold text-2xl text-accent-charcoal">{stat.value}</p>
-              </div>
-            );
-
-            return isClickable ? <Link to={linkPath} key={index}>{content}</Link> : <div key={index}>{content}</div>;
-          })}
+        {/* Navigation Tabs */}
+        <div className="flex space-x-4 mb-8 border-b border-gray-200">
+          <button
+            className={`px-4 py-2 font-inter font-medium ${activeTab === 'dashboard' ? 'border-b-2 border-primary-orange text-primary-orange' : 'text-gray-600 hover:text-primary-orange'}`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            Dashboard
+          </button>
+          <button
+            className={`px-4 py-2 font-inter font-medium ${activeTab === 'restaurants' ? 'border-b-2 border-primary-orange text-primary-orange' : 'text-gray-600 hover:text-primary-orange'}`}
+            onClick={() => setActiveTab('restaurants')}
+          >
+            Restaurants
+          </button>
+          <button
+            className={`px-4 py-2 font-inter font-medium ${activeTab === 'dishes' ? 'border-b-2 border-primary-orange text-primary-orange' : 'text-gray-600 hover:text-primary-orange'}`}
+            onClick={() => setActiveTab('dishes')}
+          >
+            Dishes
+          </button>
+          <button
+            className={`px-4 py-2 font-inter font-medium ${activeTab === 'users' ? 'border-b-2 border-primary-orange text-primary-orange' : 'text-gray-600 hover:text-primary-orange'}`}
+            onClick={() => setActiveTab('users')}
+          >
+            Users
+          </button>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Recent Orders */}
-              <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-poppins font-bold text-xl text-accent-charcoal">
-                    Recent Orders
-                  </h2>
-                  <div className="flex space-x-4">
-                    <button className="text-primary-orange hover:text-accent-charcoal font-inter font-semibold">
-                      View All
+        {/* Conditional Rendering of Content */}
+        {activeTab === 'dashboard' && (
+          <>
+            {/* Stats Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {stats.map((stat, index) => {
+                const IconComponent = stat.icon;
+                const isClickable = stat.title === 'Active Restaurants' || stat.title === 'Delivery Partners';
+                const linkPath = stat.title === 'Active Restaurants' ? '/admin/restaurants' : stat.title === 'Delivery Partners' ? '/admin/delivery-partners' : '#';
+
+                const content = (
+                  <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center`}>
+                        <IconComponent className="w-6 h-6 text-white" />
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-sm font-inter font-medium ${
+                        stat.change.startsWith('+') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {stat.change}
+                      </span>
+                    </div>
+                    <h3 className="font-inter text-gray-600 text-sm mb-1">{stat.title}</h3>
+                    <p className="font-poppins font-bold text-2xl text-accent-charcoal">{stat.value}</p>
+                  </div>
+                );
+
+                return isClickable ? <Link to={linkPath} key={index}>{content}</Link> : <div key={index}>{content}</div>;
+              })}
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Recent Orders */}
+                  <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="font-poppins font-bold text-xl text-accent-charcoal">
+                        Recent Orders
+                      </h2>
+                      <div className="flex space-x-4">
+                        <button className="text-primary-orange hover:text-accent-charcoal font-inter font-semibold">
+                          View All
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left font-inter font-semibold text-gray-600 pb-3">Order ID</th>
+                            <th className="text-left font-inter font-semibold text-gray-600 pb-3">Customer</th>
+                            <th className="text-left font-inter font-semibold text-gray-600 pb-3">Items</th>
+                            <th className="text-left font-inter font-semibold text-gray-600 pb-3">Amount</th>
+                            <th className="text-left font-inter font-semibold text-gray-600 pb-3">Status</th>
+                            <th className="text-left font-inter font-semibold text-gray-600 pb-3">Time</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {orders
+                            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                            .slice(0, 5)
+                            .map((order) => (
+                              <tr key={order._id} className="border-b border-gray-100">
+                                <td className="py-4 font-inter font-medium text-accent-charcoal">{order.orderCode}</td>
+                                <td className="py-4 font-inter text-gray-600">{order.user.name}</td>
+                                <td className="py-4 font-inter text-gray-600">{order.orderItems.map(item => `${item.name} x${item.qty}`).join(', ')}</td>
+                                <td className="py-4 font-inter font-semibold text-accent-charcoal">₹{order.totalPrice.toFixed(2)}</td>
+                                <td className="py-4">
+                                  <span className={`px-3 py-1 rounded-full text-xs font-inter font-medium ${getStatusColor(order.orderStatus)}`}>
+                                    {order.orderStatus}
+                                  </span>
+                                </td>
+                                <td className="py-4 font-inter text-sm text-gray-500">{new Date(order.createdAt).toLocaleString()}</td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+              {/* Quick Actions */}
+              <div className="space-y-6">
+                {/* System Health */}
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Activity className="w-5 h-5 text-primary-green" />
+                    <h3 className="font-poppins font-bold text-lg text-accent-charcoal">
+                      System Health
+                    </h3>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-inter text-sm text-gray-600">Server Status</span>
+                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-inter">Online</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-inter text-sm text-gray-600">Database</span>
+                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-inter">Healthy</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-inter text-sm text-gray-600">Payment Gateway</span>
+                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-inter">Active</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-inter text-sm text-gray-600">Delivery API</span>
+                      <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-inter">Slow</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <h3 className="font-poppins font-bold text-lg text-accent-charcoal mb-4">
+                    Quick Actions
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => handleOpenModal('restaurant')}
+                      className="w-full bg-gradient-teal-cyan text-white py-3 rounded-xl font-inter font-medium hover:shadow-lg transition-shadow disabled:opacity-50"
+                      disabled={pendingRestaurantRequests.length === 0}
+                    >
+                      Approve Restaurant ({pendingRestaurantRequests.length})
+                    </button>
+                    <button
+                      onClick={() => handleOpenModal('delivery')}
+                      className="w-full bg-primary-green text-white py-3 rounded-xl font-inter font-medium hover:shadow-lg transition-shadow disabled:opacity-50"
+                      disabled={pendingDeliveryRequests.length === 0}
+                    >
+                      Verify Delivery Partner ({pendingDeliveryRequests.length})
+                    </button>
+                    <button className="w-full border-2 border-primary-orange text-primary-orange py-3 rounded-xl font-inter font-medium hover:bg-primary-orange hover:text-white transition-colors">
+                      Generate Report
                     </button>
                   </div>
                 </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-gray-200">
-                        <th className="text-left font-inter font-semibold text-gray-600 pb-3">Order ID</th>
-                        <th className="text-left font-inter font-semibold text-gray-600 pb-3">Customer</th>
-                        <th className="text-left font-inter font-semibold text-gray-600 pb-3">Items</th>
-                        <th className="text-left font-inter font-semibold text-gray-600 pb-3">Amount</th>
-                        <th className="text-left font-inter font-semibold text-gray-600 pb-3">Status</th>
-                        <th className="text-left font-inter font-semibold text-gray-600 pb-3">Time</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orders
-                        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                        .slice(0, 5)
-                        .map((order) => (
-                          <tr key={order._id} className="border-b border-gray-100">
-                            <td className="py-4 font-inter font-medium text-accent-charcoal">{order.orderCode}</td>
-                            <td className="py-4 font-inter text-gray-600">{order.user.name}</td>
-                            <td className="py-4 font-inter text-gray-600">{order.orderItems.map(item => `${item.name} x${item.qty}`).join(', ')}</td>
-                            <td className="py-4 font-inter font-semibold text-accent-charcoal">₹{order.totalPrice.toFixed(2)}</td>
-                            <td className="py-4">
-                              <span className={`px-3 py-1 rounded-full text-xs font-inter font-medium ${getStatusColor(order.orderStatus)}`}>
-                                {order.orderStatus}
-                              </span>
-                            </td>
-                            <td className="py-4 font-inter text-sm text-gray-500">{new Date(order.createdAt).toLocaleString()}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-          {/* Quick Actions */}
-          <div className="space-y-6">
-            {/* System Health */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <Activity className="w-5 h-5 text-primary-green" />
-                <h3 className="font-poppins font-bold text-lg text-accent-charcoal">
-                  System Health
-                </h3>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-inter text-sm text-gray-600">Server Status</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-inter">Online</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-inter text-sm text-gray-600">Database</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-inter">Healthy</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-inter text-sm text-gray-600">Payment Gateway</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-inter">Active</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-inter text-sm text-gray-600">Delivery API</span>
-                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-inter">Slow</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="font-poppins font-bold text-lg text-accent-charcoal mb-4">
-                Quick Actions
-              </h3>
-              
-              <div className="space-y-3">
-                <button
-                  onClick={() => handleOpenModal('restaurant')}
-                  className="w-full bg-gradient-orange-yellow text-white py-3 rounded-xl font-inter font-medium hover:shadow-lg transition-shadow disabled:opacity-50"
-                  disabled={pendingRestaurantRequests.length === 0}
-                >
-                  Approve Restaurant ({pendingRestaurantRequests.length})
-                </button>
-                <button
-                  onClick={() => handleOpenModal('delivery')}
-                  className="w-full bg-primary-green text-white py-3 rounded-xl font-inter font-medium hover:shadow-lg transition-shadow disabled:opacity-50"
-                  disabled={pendingDeliveryRequests.length === 0}
-                >
-                  Verify Delivery Partner ({pendingDeliveryRequests.length})
-                </button>
-                <button className="w-full border-2 border-primary-orange text-primary-orange py-3 rounded-xl font-inter font-medium hover:bg-primary-orange hover:text-white transition-colors">
-                  Generate Report
-                </button>
-              </div>
-            </div>
-
-            {/* Top Performing */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="font-poppins font-bold text-lg text-accent-charcoal mb-4">
-                Top Performing
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-inter text-sm text-gray-600">Green Kitchen</span>
-                    <span className="font-inter text-sm font-semibold text-accent-charcoal">₹45,230</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-primary-green h-2 rounded-full w-4/5"></div>
-                  </div>
-                </div>
-                
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-inter text-sm text-gray-600">Ocean Fresh</span>
-                    <span className="font-inter text-sm font-semibold text-accent-charcoal">₹38,920</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-primary-orange h-2 rounded-full w-3/5"></div>
-                  </div>
-                </div>
-                
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-inter text-sm text-gray-600">FitBite Express</span>
-                    <span className="font-inter text-sm font-semibold text-accent-charcoal">₹32,150</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-accent-teal h-2 rounded-full w-2/5"></div>
+                {/* Top Performing */}
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <h3 className="font-poppins font-bold text-lg text-accent-charcoal mb-4">
+                    Top Performing
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-inter text-sm text-gray-600">Green Kitchen</span>
+                        <span className="font-inter text-sm font-semibold text-accent-charcoal">₹45,230</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-primary-green h-2 rounded-full w-4/5"></div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-inter text-sm text-gray-600">Ocean Fresh</span>
+                        <span className="font-inter text-sm font-semibold text-accent-charcoal">₹38,920</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-primary-orange h-2 rounded-full w-3/5"></div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-inter text-sm text-gray-600">FitBite Express</span>
+                        <span className="font-inter text-sm font-semibold text-accent-charcoal">₹32,150</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-accent-teal h-2 rounded-full w-2/5"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
+
+        {activeTab === 'restaurants' && <ManageRestaurants />}
+
+        {activeTab === 'dishes' && <ManageDishes />}
+
+        {activeTab === 'users' && <ManageUsers />}
       </div>
-      <RequestModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        request={selectedRequest}
-        onApprove={handleApprove}
-        onReject={handleReject}
-        requestType={requestType}
-        onNext={handleNextRequest}
-        hasMoreRequests={requestType === 'restaurant' ? (currentRequestIndex < pendingRestaurantRequests.length - 1) : (currentRequestIndex < pendingDeliveryRequests.length - 1)}
-        onPrevious={handlePreviousRequest}
-        hasPreviousRequests={currentRequestIndex > 0}
-      />
+      {isModalOpen && selectedRequest && (
+        <RequestModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          request={selectedRequest}
+          onApprove={handleApprove}
+          onReject={handleReject}
+          requestType={requestType}
+          onNext={handleNextRequest}
+          hasMoreRequests={
+            requestType === 'restaurant'
+              ? currentRequestIndex < pendingRestaurantRequests.length - 1
+              : currentRequestIndex < pendingDeliveryRequests.length - 1
+          }
+          onPrevious={handlePreviousRequest}
+          hasPreviousRequests={currentRequestIndex > 0}
+        />
+      )}
     </div>
   );
 };

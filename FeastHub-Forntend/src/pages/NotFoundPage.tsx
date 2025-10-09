@@ -11,7 +11,7 @@ const NotFoundPage = () => {
         </p>
         <a 
           href="/" 
-          className="bg-gradient-orange-yellow text-white px-6 py-3 rounded-xl font-inter font-semibold hover:shadow-lg transition-all duration-300"
+          className="bg-gradient-teal-cyan text-white px-6 py-3 rounded-xl font-inter font-semibold hover:shadow-lg transition-all duration-300"
         >
           Go to Homepage
         </a>

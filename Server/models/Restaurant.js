@@ -20,6 +20,20 @@ const restaurantSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    cuisineType: {
+      type: String,
+    },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    deliveryTime: {
+      type: String,
+    },
+    healthyBadge: {
+      type: Boolean,
+      default: false,
+    },
     cuisine: [
       {
         type: String,
@@ -48,6 +62,14 @@ const restaurantSchema = new mongoose.Schema(
     avgPrepTime: {
       type: Number,
       default: 0, // in minutes
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    hasRecipeBox: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

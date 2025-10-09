@@ -1,11 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Smile, Battery, Coffee, Zap } from 'lucide-react';
-import { moodRecommendations } from '../utils/data';
+import axios from 'axios';
 import DishCard from './DishCard';
 
+interface Dish {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  nutrition: { calories: number; protein: number };
+  dietTypes: string[];
+  healthGoals: string[];
+  prepTime: number;
+  restaurant: string;
+}
+
+interface MoodRecommendation {
+  title: string;
+  description: string;
+  dishes: Dish[];
+}
+
 const MoodRecommendations = () => {
-  const [selectedMood, setSelectedMood] = useState<keyof typeof moodRecommendations>('happy');
+  const [selectedMood, setSelectedMood] = useState<string>('happy');
+  const [moodRecommendation, setMoodRecommendation] = useState<MoodRecommendation | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const moodOptions = [
     { id: 'happy', label: 'Happy & Energetic', icon: Smile, color: 'bg-yellow-100 text-yellow-800' },
@@ -13,7 +35,23 @@ const MoodRecommendations = () => {
     { id: 'stressed', label: 'Stressed & Overwhelmed', icon: Coffee, color: 'bg-purple-100 text-purple-800' },
   ] as const;
 
-  const currentRecommendation = moodRecommendations[selectedMood];
+  useEffect(() => {
+    const fetchMoodRecommendations = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get<MoodRecommendation>(`http://localhost:5000/api/dishes/mood-recommendations?mood=${selectedMood}`);
+        setMoodRecommendation(response.data);
+      } catch (err) {
+        console.error('Error fetching mood recommendations:', err);
+        setError('Failed to fetch mood recommendations.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMoodRecommendations();
+  }, [selectedMood]);
 
   return (
     <section className="py-16 bg-gradient-to-br from-white via-background-cream to-background-gray">
@@ -44,7 +82,7 @@ const MoodRecommendations = () => {
                 onClick={() => setSelectedMood(mood.id)}
                 className={`flex items-center space-x-3 px-6 py-4 rounded-2xl font-inter font-medium transition-all duration-300 transform hover:scale-105 ${
                   isSelected
-                    ? 'bg-gradient-orange-yellow text-white shadow-xl'
+                    ? 'bg-gradient-teal-cyan text-white shadow-xl'
                     : `${mood.color} hover:shadow-lg`
                 }`}
               >
@@ -56,26 +94,30 @@ const MoodRecommendations = () => {
         </div>
 
         {/* Mood-Based Recommendation */}
-        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-8 mb-12 border border-white/50 shadow-xl">
-          <div className="text-center mb-8">
-            <h3 className="font-poppins font-bold text-2xl text-accent-charcoal mb-3">
-              {currentRecommendation.title}
-            </h3>
-            <p className="font-inter text-gray-600 text-lg">
-              {currentRecommendation.description}
-            </p>
-          </div>
+        {loading && <div className="text-center">Loading recommendations...</div>}
+        {error && <div className="text-center text-red-500">{error}</div>}
+        {!loading && !error && moodRecommendation && (
+          <div className="bg-white/70 backdrop-blur-md rounded-3xl p-8 mb-12 border border-white/50 shadow-xl">
+            <div className="text-center mb-8">
+              <h3 className="font-poppins font-bold text-2xl text-accent-charcoal mb-3">
+                {moodRecommendation.title}
+              </h3>
+              <p className="font-inter text-gray-600 text-lg">
+                {moodRecommendation.description}
+              </p>
+            </div>
 
-          {/* Recommended Dishes */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentRecommendation.dishes.slice(0, 3).map((dish) => (
-              <DishCard key={dish.id} dish={dish} />
-            ))}
+            {/* Recommended Dishes */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {moodRecommendation.dishes.slice(0, 3).map((dish) => (
+                <DishCard key={dish._id} dish={dish} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Personalization CTA */}
-        <div className="bg-gradient-orange-yellow rounded-2xl p-8 text-center text-white">
+        <div className="bg-gradient-teal-cyan rounded-2xl p-8 text-center text-white">
           <h3 className="font-poppins font-bold text-2xl mb-3">
             Get Personalized Daily Recommendations
           </h3>

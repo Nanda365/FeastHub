@@ -1,4 +1,4 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import { Target, TrendingUp, Heart, Zap, Scale, Dumbbell } from 'lucide-react';
 
 const HealthGoalsSection = () => {
@@ -95,7 +95,7 @@ const HealthGoalsSection = () => {
                     </div>
                   </div>
 
-                  <Link to={`/menu?healthGoal=${goal.id}`} className="w-full bg-gradient-orange-yellow text-white py-3 rounded-xl font-inter font-medium hover:shadow-lg transform hover:scale-105 transition-all duration-300 text-center">
+                  <Link to={`/menu?healthGoal=${goal.id}`} className="w-full bg-gradient-teal-cyan text-white py-3 rounded-xl font-inter font-medium hover:shadow-lg transform hover:scale-105 transition-all duration-300 text-center">
                     Explore Menu
                   </Link>
                 </div>

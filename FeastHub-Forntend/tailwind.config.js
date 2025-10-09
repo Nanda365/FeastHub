@@ -10,7 +10,7 @@ export default {
       },
       colors: {
         primary: {
-          orange: '#FF7043',
+          orange: '#00CCBC',
           green: '#43A047',
         },
         background: {
@@ -24,7 +24,7 @@ export default {
         }
       },
       backgroundImage: {
-        'gradient-orange-yellow': 'linear-gradient(135deg, #FF7043 0%, #FFC107 100%)',
+        'gradient-teal-cyan': 'linear-gradient(135deg, #00CCBC 0%, #00897B 100%)',
         'gradient-orange-pink': 'linear-gradient(135deg, #FF7043 0%, #FF6B9D 100%)',
       },
       backdropBlur: {
