@@ -44,7 +44,7 @@ const CustomOrderManagement: React.FC<CustomOrderManagementProps> = ({
           },
         };
         const { data } = await axios.get(
-          `http://localhost:5000/api/custom-orders/${restaurantId}/orders`,
+          `${import.meta.env.VITE_API_URL}/custom-orders/${restaurantId}/orders`,
           config
         );
         console.log('Raw custom orders data from API:', data); // Debugging line
@@ -84,7 +84,7 @@ const CustomOrderManagement: React.FC<CustomOrderManagementProps> = ({
       }
 
       const { data } = await axios.put(
-        `http://localhost:5000/api/custom-orders/${orderId}`,
+        `${import.meta.env.VITE_API_URL}/custom-orders/${orderId}`,
         updateData,
         config
       );

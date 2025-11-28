@@ -34,7 +34,7 @@ const DeliveryOnboardingPage = () => {
         },
       };
       const response = await axios.post(
-        'http://localhost:5000/api/users/delivery-requests',
+        `${import.meta.env.VITE_API_URL}/users/delivery-requests`,
         data,
         config
       );

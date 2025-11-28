@@ -70,7 +70,7 @@ const TableManagement: React.FC<TableManagementProps> = ({ restaurantId }) => {
 
   const fetchTables = async () => {
     try {
-      const { data } = await axios.get<Table[]>(`http://localhost:5000/api/tables`, config);
+      const { data } = await axios.get<Table[]>(`${import.meta.env.VITE_API_URL}/tables`, config);
       setTables(data);
     } catch (err: any) {
       console.error('Error fetching tables:', err);
@@ -80,7 +80,7 @@ const TableManagement: React.FC<TableManagementProps> = ({ restaurantId }) => {
 
   const fetchReservations = async () => {
     try {
-      const { data } = await axios.get<Reservation[]>(`http://localhost:5000/api/reservations`, config);
+      const { data } = await axios.get<Reservation[]>(`${import.meta.env.VITE_API_URL}/reservations`, config);
       setReservations(data);
     } catch (err: any) {
       console.error('Error fetching reservations:', err);
@@ -101,10 +101,10 @@ const TableManagement: React.FC<TableManagementProps> = ({ restaurantId }) => {
     setTableCrudError(null);
     try {
       if (editingTable) {
-        await axios.put(`http://localhost:5000/api/tables/${editingTable._id}`, tableData, config);
+        await axios.put(`${import.meta.env.VITE_API_URL}/tables/${editingTable._id}`, tableData, config);
         toast.success('Table updated successfully!');
       } else {
-        await axios.post(`http://localhost:5000/api/tables`, tableData, config);
+        await axios.post(`${import.meta.env.VITE_API_URL}/tables`, tableData, config);
         toast.success('Table added successfully!');
       }
       fetchTables();
@@ -131,7 +131,7 @@ const TableManagement: React.FC<TableManagementProps> = ({ restaurantId }) => {
     if (tableToDeleteId) {
       setTableCrudError(null);
       try {
-        await axios.delete(`http://localhost:5000/api/tables/${tableToDeleteId}`, config);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/tables/${tableToDeleteId}`, config);
         toast.success('Table removed!');
         fetchTables();
         fetchReservations(); // Refresh reservations as well
@@ -155,10 +155,10 @@ const TableManagement: React.FC<TableManagementProps> = ({ restaurantId }) => {
   const handleSaveReservation = async (reservationData: any) => {
     try {
       if (editingReservation) {
-        await axios.put(`http://localhost:5000/api/reservations/${editingReservation._id}`, reservationData, config);
+        await axios.put(`${import.meta.env.VITE_API_URL}/reservations/${editingReservation._id}`, reservationData, config);
         toast.success('Reservation updated successfully!');
       } else {
-        await axios.post(`http://localhost:5000/api/reservations`, { ...reservationData, restaurantId }, config);
+        await axios.post(`${import.meta.env.VITE_API_URL}/reservations`, { ...reservationData, restaurantId }, config);
         toast.success('Reservation added successfully!');
       }
       fetchReservations();
@@ -184,7 +184,7 @@ const TableManagement: React.FC<TableManagementProps> = ({ restaurantId }) => {
   const confirmDeleteReservation = async () => {
     if (reservationToDeleteId) {
       try {
-        await axios.delete(`http://localhost:5000/api/reservations/${reservationToDeleteId}`, config);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/reservations/${reservationToDeleteId}`, config);
         toast.success('Reservation removed!');
         fetchReservations();
         fetchTables(); // Refresh tables as status might change
@@ -205,7 +205,7 @@ const TableManagement: React.FC<TableManagementProps> = ({ restaurantId }) => {
 
   const handleUpdateReservationStatus = async (reservationId: string, newStatus: Reservation['status']) => {
     try {
-      await axios.put(`http://localhost:5000/api/reservations/${reservationId}`, { status: newStatus }, config);
+      await axios.put(`${import.meta.env.VITE_API_URL}/reservations/${reservationId}`, { status: newStatus }, config);
       toast.success('Reservation status updated!');
       fetchReservations();
       fetchTables(); // Refresh tables as status might change

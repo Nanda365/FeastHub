@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string, role: string) => {
     setIsLoading(true);
-    const { data } = await axios.post('http://localhost:5000/api/users/login', { email, password, role });
+    const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/users/login`, { email, password, role });
     setUser({
       ...data,
       fullName: data.fullName || '',
@@ -93,7 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             Authorization: `Bearer ${token}`,
           },
         };
-        await axios.delete('http://localhost:5000/api/users/cart', config);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/users/cart`, config);
         console.log('User cart cleared on backend.');
       } catch (error) {
         console.error('Error clearing user cart on backend:', error);

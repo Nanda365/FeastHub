@@ -28,8 +28,7 @@ const VerificationPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('http://localhost:5000/api/users/resend-verification', { email });
-      toast.success(response.data.message || 'Verification code sent to your email.');
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/resend-verification`, { email });
       setStep('codeEntry');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to send verification code. Please check your email.');
@@ -44,7 +43,7 @@ const VerificationPage = () => {
     setLoading(true);
     setError(null);
     try {
-      await axios.post('http://localhost:5000/api/users/verify', { email, verificationCode });
+      await axios.post(`${import.meta.env.VITE_API_URL}/users/verify`, { email, verificationCode });
       toast.success('Account verified successfully! You can now log in.');
       navigate('/login');
     } catch (err: any) {
@@ -59,7 +58,7 @@ const VerificationPage = () => {
     setResending(true);
     setError(null);
     try {
-      const response = await axios.post('http://localhost:5000/api/users/resend-verification', { email });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/resend-verification`, { email });
       toast.success(response.data.message || 'New verification code sent.');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to resend code.');

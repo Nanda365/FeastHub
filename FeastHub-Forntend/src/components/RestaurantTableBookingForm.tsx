@@ -64,7 +64,7 @@ const RestaurantTableBookingForm: React.FC<RestaurantTableBookingFormProps> = ({
             reservationTime: reservationTime.toISOString(),
           },
         };
-        const { data } = await axios.get<TableOption[]>(`http://localhost:5000/api/tables`, config);
+        const { data } = await axios.get<TableOption[]>(`${import.meta.env.VITE_API_URL}/tables`, config);
         setAvailableTables(data);
         if (data.length > 0) {
           setSelectedTable(data[0]._id); // Pre-select the first available table
@@ -119,7 +119,7 @@ const RestaurantTableBookingForm: React.FC<RestaurantTableBookingFormProps> = ({
 
         // Call backend to create Razorpay order
         const { data } = await axios.post(
-          'http://localhost:5000/api/payment/table-booking',
+          `${import.meta.env.VITE_API_URL}/payment/table-booking`,
           {
             amount: selectedTableAmount,
             restaurantId,
@@ -150,7 +150,7 @@ const RestaurantTableBookingForm: React.FC<RestaurantTableBookingFormProps> = ({
                 },
               };
               await axios.post(
-                'http://localhost:5000/api/payment/table-booking/verify',
+                `${import.meta.env.VITE_API_URL}/payment/table-booking/verify`,
                 {
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
@@ -201,7 +201,7 @@ const RestaurantTableBookingForm: React.FC<RestaurantTableBookingFormProps> = ({
       } else {
         // Existing booking request logic
         await axios.post(
-          'http://localhost:5000/api/reservations',
+          `${import.meta.env.VITE_API_URL}/reservations`,
           {
             restaurantId,
             tableId: selectedTable, // Only send selectedTable if it's not null

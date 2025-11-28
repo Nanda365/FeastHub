@@ -32,11 +32,11 @@ const TableBookingPage: React.FC = () => {
 
         if (restaurantId) {
           // Fetch single restaurant details if restaurantId is in URL
-          const response = await axios.get<Restaurant>(`http://localhost:5000/api/restaurants/${restaurantId}`);
+          const response = await axios.get<Restaurant>(`${import.meta.env.VITE_API_URL}/restaurants/${restaurantId}`);
           setSelectedRestaurant(response.data);
         } else {
           // Fetch all restaurants if no specific restaurantId
-          const response = await axios.get<Restaurant[]>(`http://localhost:5000/api/restaurants`);
+          const response = await axios.get<Restaurant[]>(`${import.meta.env.VITE_API_URL}/restaurants`);
           setRestaurants(response.data);
         }
       } catch (err: any) {

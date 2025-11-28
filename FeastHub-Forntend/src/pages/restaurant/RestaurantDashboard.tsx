@@ -95,24 +95,24 @@ const RestaurantDashboard = () => {
         },
       };
       const { data: restaurantProfile } = await axios.get(
-        'http://localhost:5000/api/restaurants/profile',
+        `${import.meta.env.VITE_API_URL}/restaurants/profile`,
         config
       );
       setRestaurantData(restaurantProfile);
 
       const { data: menu } = await axios.get(
-        'http://localhost:5000/api/restaurants/menu',
+        `${import.meta.env.VITE_API_URL}/restaurants/menu`,
         config
       );
       setMenuItems(menu);
 
       if (restaurantProfile?._id) {
         const { data: restaurantOrders } = await axios.get(
-          `http://localhost:5000/api/orders/restaurant/${restaurantProfile._id}`,
+          `${import.meta.env.VITE_API_URL}/orders/restaurant/${restaurantProfile._id}`,
           config
         );
         const { data: customOrders } = await axios.get(
-          `http://localhost:5000/api/custom-orders/${restaurantProfile._id}/orders`,
+          `${import.meta.env.VITE_API_URL}/custom-orders/${restaurantProfile._id}/orders`,
           config
         );
         setRegularOrders(restaurantOrders);
@@ -147,14 +147,14 @@ const RestaurantDashboard = () => {
       };
       if (selectedDish) {
         await axios.put(
-          `http://localhost:5000/api/restaurants/menu/${selectedDish._id}`,
+          `${import.meta.env.VITE_API_URL}/restaurants/menu/${selectedDish._id}`,
           dishData,
           config
         );
         toast.success('Dish updated successfully!');
       } else {
         await axios.post(
-          'http://localhost:5000/api/restaurants/menu',
+          `${import.meta.env.VITE_API_URL}/restaurants/menu`,
           dishData,
           config
         );
@@ -182,7 +182,7 @@ const RestaurantDashboard = () => {
           },
         };
         await axios.delete(
-          `http://localhost:5000/api/restaurants/menu/${dishToDeleteId}`,
+          `${import.meta.env.VITE_API_URL}/restaurants/menu/${dishToDeleteId}`,
           config
         );
         toast.success('Dish deleted successfully!');
@@ -230,7 +230,7 @@ const RestaurantDashboard = () => {
         },
       };
       await axios.put(
-        'http://localhost:5000/api/restaurants/profile',
+        `${import.meta.env.VITE_API_URL}/restaurants/profile`,
         { cuisine: cuisine.split(',').map(c => c.trim()) },
         config
       );
@@ -252,7 +252,7 @@ const RestaurantDashboard = () => {
         },
       };
       await axios.put(
-        'http://localhost:5000/api/restaurants/profile',
+        `${import.meta.env.VITE_API_URL}/restaurants/profile`,
         { imageUrl: imageUrl === '' ? '' : imageUrl },
         config
       );
@@ -275,7 +275,7 @@ const RestaurantDashboard = () => {
       };
       const newRecipeBoxStatus = !hasRecipeBox;
       await axios.put(
-        'http://localhost:5000/api/restaurants/profile',
+        `${import.meta.env.VITE_API_URL}/restaurants/profile`,
         { hasRecipeBox: newRecipeBoxStatus },
         config
       );
@@ -296,7 +296,7 @@ const RestaurantDashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const url = `http://localhost:5000/api/orders/${orderId}/status`;
+      const url = `${import.meta.env.VITE_API_URL}/orders/${orderId}/status`;
       const body = { orderStatus: newStatus };
       await axios.put(url, body, config);
       toast.success('Order status updated successfully!');
@@ -333,7 +333,7 @@ const RestaurantDashboard = () => {
         responseType: 'blob', 
       };
       const { data } = await axios.get(
-        'http://localhost:5000/api/orders/report/completed',
+        `${import.meta.env.VITE_API_URL}/orders/report/completed`,
         config
       );
       const blob = new Blob([data], { type: 'application/json' });

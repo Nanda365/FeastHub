@@ -62,11 +62,11 @@ const RestaurantMenuPage: React.FC = () => {
         }
 
         // Fetch restaurant details
-        const restaurantResponse = await axios.get<Restaurant>(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        const restaurantResponse = await axios.get<Restaurant>(`${import.meta.env.VITE_API_URL}/restaurants/${restaurantId}`);
         setRestaurant(restaurantResponse.data);
 
         // Fetch dishes for the restaurant
-        const dishesResponse = await axios.get<Dish[]>(`http://localhost:5000/api/restaurants/${restaurantId}/dishes`);
+        const dishesResponse = await axios.get<Dish[]>(`${import.meta.env.VITE_API_URL}/restaurants/${restaurantId}/dishes`);
         setDishes(dishesResponse.data);
 
       } catch (err) {

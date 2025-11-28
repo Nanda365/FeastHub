@@ -117,7 +117,7 @@ const DeliveryDashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const { data } = await axios.get('http://localhost:5000/api/orders/deliverypartner', config);
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/orders/deliverypartner`, config);
       setDeliveryOrders(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching delivery orders:', error);
@@ -127,7 +127,7 @@ const DeliveryDashboard = () => {
 
   const fetchDonations = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/donations');
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/donations`);
       setDonations(Array.isArray(data.donations) ? data.donations : []);
     } catch (error) {
       console.error('Error fetching donations:', error);
@@ -161,7 +161,7 @@ const DeliveryDashboard = () => {
         },
       };
       await axios.put(
-        `http://localhost:5000/api/orders/${orderId}/status`,
+        `${import.meta.env.VITE_API_URL}/orders/${orderId}/status`,
         { orderStatus: newStatus },
         config
       );
@@ -208,7 +208,7 @@ const DeliveryDashboard = () => {
         },
       };
       await axios.put(
-        `http://localhost:5000/api/donations/${donationId}/accept`,
+        `${import.meta.env.VITE_API_URL}/donations/${donationId}/accept`,
         {},
         config
       );

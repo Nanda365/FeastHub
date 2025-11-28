@@ -51,7 +51,7 @@ const UserReservationsPage: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const { data } = await axios.get<Reservation[]>(`http://localhost:5000/api/reservations`, config);
+      const { data } = await axios.get<Reservation[]>(`${import.meta.env.VITE_API_URL}/reservations`, config);
       setReservations(data);
     } catch (err: any) {
       console.error('Error fetching user reservations:', err);
@@ -72,7 +72,7 @@ const UserReservationsPage: React.FC = () => {
         },
       };
       const { data } = await axios.put(
-        `http://localhost:5000/api/reservations/${cancellingReservationId}`,
+        `${import.meta.env.VITE_API_URL}/reservations/${cancellingReservationId}`,
         { status: 'cancelled', cancellationReason: reason },
         config
       );

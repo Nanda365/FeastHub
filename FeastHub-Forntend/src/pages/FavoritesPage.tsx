@@ -28,7 +28,7 @@ const FavoritesPage: React.FC = () => {
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await axios.get<Dish[]>('http://localhost:5000/api/favorites', config);
+        const response = await axios.get<Dish[]>(`${import.meta.env.VITE_API_URL}/favorites`, config);
         setFavoriteDishes(response.data);
       } catch (err) {
         if (axios.isAxiosError(err)) {

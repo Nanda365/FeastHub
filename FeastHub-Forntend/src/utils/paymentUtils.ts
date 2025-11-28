@@ -94,7 +94,7 @@ export const initiateRazorpayPayment = async ({
           if (verificationResponse.message === 'Payment verified successfully') {
             // Place the order after successful payment verification
             const orderResponse = await axios.post(
-              'http://localhost:5000/api/orders',
+              `${import.meta.env.VITE_API_URL}/orders`,
               { ...orderData, paymentMethod: 'online', paymentStatus: 'Paid' }, // Ensure payment method is online
               config
             );

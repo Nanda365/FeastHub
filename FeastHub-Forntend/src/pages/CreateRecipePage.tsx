@@ -50,7 +50,7 @@ const CreateRecipePage = () => {
               Authorization: `Bearer ${token}`,
             },
           };
-          const { data } = await axios.get('http://localhost:5000/api/users/addresses', config);
+          const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/users/addresses`, config);
           setAddresses(data);
           if (data.length > 0) {
             setSelectedAddress(data[0]._id);
@@ -80,7 +80,7 @@ const CreateRecipePage = () => {
             Authorization: `Bearer ${token}`,
           },
         };
-        const { data } = await axios.post('http://localhost:5000/api/users/addresses', newAddress, config);
+        const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/users/addresses`, newAddress, config);
         setAddresses([...addresses, data]);
         setSelectedAddress(data._id);
         setShowAddAddressForm(false);
@@ -136,7 +136,7 @@ const CreateRecipePage = () => {
             },
           };
     
-          await axios.post('http://localhost:5000/api/custom-orders', recipeData, config);
+          await axios.post(`${import.meta.env.VITE_API_URL}/custom-orders`, recipeData, config);
       // Reset form
       setRecipeName('');
       setSelectedIngredients([]);

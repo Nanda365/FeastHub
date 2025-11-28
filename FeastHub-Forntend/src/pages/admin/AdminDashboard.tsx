@@ -79,13 +79,13 @@ const AdminDashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const { data: restaurantReqs } = await axios.get('http://localhost:5000/api/users/restaurant-requests', config);
+      const { data: restaurantReqs } = await axios.get(`${import.meta.env.VITE_API_URL}/users/restaurant-requests`, config);
       setRestaurantRequests(restaurantReqs);
 
-      const { data: deliveryReqs } = await axios.get('http://localhost:5000/api/users/delivery-requests', config);
+      const { data: deliveryReqs } = await axios.get(`${import.meta.env.VITE_API_URL}/users/delivery-requests`, config);
       setDeliveryRequests(deliveryReqs);
 
-      const { data: statsData } = await axios.get('http://localhost:5000/api/users/stats', config);
+      const { data: statsData } = await axios.get(`${import.meta.env.VITE_API_URL}/users/stats`, config);
       setTotalUsersCount(statsData.totalUsers);
       setActiveRestaurantsCount(statsData.activeRestaurants);
       setDeliveryPartnersCount(statsData.deliveryPartners);
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const { data } = await axios.get('http://localhost:5000/api/orders/all', config);
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/orders/all`, config);
       setOrders(data);
     } catch (error: any) {
       console.error('Error fetching orders:', error);
@@ -184,7 +184,7 @@ const AdminDashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      await axios.put(`http://localhost:5000/api/users/${requestType}-requests/${id}/approve`, {}, config);
+      await axios.put(`${import.meta.env.VITE_API_URL}/users/${requestType}-requests/${id}/approve`, {}, config);
       toast.success(`${requestType === 'restaurant' ? 'Restaurant' : 'Delivery'} request approved successfully!`);
       fetchRequests();
       if ((requestType === 'restaurant' && currentRequestIndex < pendingRestaurantRequests.length - 1) ||
@@ -206,7 +206,7 @@ const AdminDashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      await axios.put(`http://localhost:5000/api/users/${requestType}-requests/${id}/reject`, {}, config);
+      await axios.put(`${import.meta.env.VITE_API_URL}/users/${requestType}-requests/${id}/reject`, {}, config);
       toast.error(`${requestType === 'restaurant' ? 'Restaurant' : 'Delivery'} request rejected successfully!`);
       fetchRequests();
       if ((requestType === 'restaurant' && currentRequestIndex < pendingRestaurantRequests.length - 1) ||

@@ -31,7 +31,7 @@ const DishCard: React.FC<DishCardProps> = ({ dish, showAddButton = true, restaur
             },
           };
           // Assuming an API endpoint to check if a dish is favorited by the user
-          const response = await axios.get(`http://localhost:5000/api/favorites/${dish._id}`, config);
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/favorites/${dish._id}`, config);
           setIsFavorite(response.data.isFavorite);
         } catch (error) {
           console.error('Error checking favorite status:', error);
@@ -79,11 +79,11 @@ const DishCard: React.FC<DishCardProps> = ({ dish, showAddButton = true, restaur
       };
       if (isFavorite) {
         // Remove from favorites
-        await axios.delete(`http://localhost:5000/api/favorites/${dish._id}`, config);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/favorites/${dish._id}`, config);
         toast.success('Removed from favorites!');
       } else {
         // Add to favorites
-        await axios.post(`http://localhost:5000/api/favorites`, { dishId: dish._id }, config);
+        await axios.post(`${import.meta.env.VITE_API_URL}/favorites`, { dishId: dish._id }, config);
         toast.success('Added to favorites!');
       }
       setIsFavorite(!isFavorite); // Toggle local state

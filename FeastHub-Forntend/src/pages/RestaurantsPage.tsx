@@ -44,7 +44,7 @@ const RestaurantsPage = () => {
       setLoading(true);
       setError(null);
       try {
-                const response = await axios.get<Restaurant[]>(`http://localhost:5000/api/restaurants`);
+                const response = await axios.get<Restaurant[]>(`${import.meta.env.VITE_API_URL}/restaurants`);
         
         setRestaurants(response.data);
       } catch (err) {

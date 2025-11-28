@@ -27,15 +27,15 @@ const MenuPage = () => {
       try {
         setLoading(true);
         setError(null);
-        let url = 'http://localhost:5000/api/dishes/random';
+        let url = `${import.meta.env.VITE_API_URL}/dishes/random`;
         let currentRestaurant: Restaurant | null = null;
 
         if (restaurantId) {
           // Fetch restaurant details
-          const restaurantResponse = await axios.get<Restaurant>(`http://localhost:5000/api/restaurants/${restaurantId}`);
+          const restaurantResponse = await axios.get<Restaurant>(`${import.meta.env.VITE_API_URL}/restaurants/${restaurantId}`);
           currentRestaurant = restaurantResponse.data;
           setRestaurant(currentRestaurant);
-          url = `http://localhost:5000/api/restaurants/${restaurantId}/dishes`;
+          url = `${import.meta.env.VITE_API_URL}/restaurants/${restaurantId}/dishes`;
         }
 
         const response = await axios.get<Dish[]>(url);

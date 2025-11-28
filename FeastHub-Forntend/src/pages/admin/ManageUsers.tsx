@@ -28,7 +28,7 @@ const ManageUsers = () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const { data } = await axios.get('http://localhost:5000/api/users', config);
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/users`, config);
       setUsers(data);
     } catch (err: any) {
       console.error('Error fetching users:', err);
@@ -55,7 +55,7 @@ const ManageUsers = () => {
             Authorization: `Bearer ${token}`,
           },
         };
-        await axios.delete(`http://localhost:5000/api/users/${userId}`, config);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/users/${userId}`, config);
         toast.success('User deleted successfully!');
         fetchUsers(); // Refresh the list
       } catch (err: any) {

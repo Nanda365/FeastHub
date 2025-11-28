@@ -34,7 +34,7 @@ const RegisterPage = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.post('http://localhost:5000/api/users/register', data);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/register`, data);
       setIsLoading(false);
       navigate('/verify', { state: { email: data.email } });
     } catch (error: any) {

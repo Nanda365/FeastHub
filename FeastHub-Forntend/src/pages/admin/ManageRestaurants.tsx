@@ -29,7 +29,7 @@ const ManageRestaurants = () => {
         },
       };
       // Assuming you have an API endpoint to get all restaurants for admin
-      const { data } = await axios.get('http://localhost:5000/api/restaurants', config);
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/restaurants`, config);
       setRestaurants(data);
     } catch (err: any) {
       console.error('Error fetching restaurants:', err);
@@ -54,7 +54,7 @@ const ManageRestaurants = () => {
             Authorization: `Bearer ${token}`,
           },
         };
-        const endpoint = block ? `http://localhost:5000/api/restaurants/${restaurantId}/block` : `http://localhost:5000/api/restaurants/${restaurantId}/unblock`;
+        const endpoint = block ? `${import.meta.env.VITE_API_URL}/restaurants/${restaurantId}/block` : `${import.meta.env.VITE_API_URL}/restaurants/${restaurantId}/unblock`;
         await axios.put(endpoint, {}, config);
         toast.success(`Restaurant ${block ? 'blocked' : 'unblocked'} successfully!`);
         fetchRestaurants(); // Refresh the list

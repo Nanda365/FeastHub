@@ -40,7 +40,7 @@ const MoodRecommendations = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get<MoodRecommendation>(`http://localhost:5000/api/dishes/mood-recommendations?mood=${selectedMood}`);
+        const response = await axios.get<MoodRecommendation>(`${import.meta.env.VITE_API_URL}/dishes/mood-recommendations?mood=${selectedMood}`);
         setMoodRecommendation(response.data);
       } catch (err) {
         console.error('Error fetching mood recommendations:', err);

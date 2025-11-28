@@ -29,7 +29,7 @@ const RestaurantListPage: React.FC = () => {
           },
         };
         const { data } = await axios.get(
-          'http://localhost:5000/api/users/restaurants/active',
+          `${import.meta.env.VITE_API_URL}/users/restaurants/active`,
           config
         );
         setRestaurants(data);

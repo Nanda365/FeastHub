@@ -29,7 +29,7 @@ const DeliveryPartnerListPage: React.FC = () => {
           },
         };
         const { data } = await axios.get(
-          'http://localhost:5000/api/users/delivery-partners/active',
+          `${import.meta.env.VITE_API_URL}/users/delivery-partners/active`,
           config
         );
         setDeliveryPartners(data);

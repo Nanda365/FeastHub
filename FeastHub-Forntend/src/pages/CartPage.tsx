@@ -39,7 +39,7 @@ const CartPage = () => {
       for (const item of items) {
         if (item.dish.restaurantId && !names[item.dish.restaurantId]) {
           try {
-            const response = await axios.get(`http://localhost:5000/api/restaurants/${item.dish.restaurantId}`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/restaurants/${item.dish.restaurantId}`);
             names[item.dish.restaurantId] = response.data.name;
           } catch (error) {
             console.error(`Error fetching restaurant ${item.dish.restaurantId}:`, error);

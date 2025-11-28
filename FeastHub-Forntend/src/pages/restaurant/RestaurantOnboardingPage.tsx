@@ -34,7 +34,7 @@ const RestaurantOnboardingPage = () => {
         },
       };
       const response = await axios.post(
-        'http://localhost:5000/api/users/restaurant-requests',
+        `${import.meta.env.VITE_API_URL}/users/restaurant-requests`,
         data,
         config
       );

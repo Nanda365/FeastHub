@@ -30,7 +30,7 @@ const ManageDishes = () => {
         },
       };
       // Assuming you have an API endpoint to get all dishes for admin
-      const { data } = await axios.get('http://localhost:5000/api/dishes', config);
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/dishes`, config);
       setDishes(data);
     } catch (err: any) {
       console.error('Error fetching dishes:', err);
@@ -55,7 +55,7 @@ const ManageDishes = () => {
             Authorization: `Bearer ${token}`,
           },
         };
-        await axios.delete(`http://localhost:5000/api/dishes/${dishId}`, config);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/dishes/${dishId}`, config);
         toast.success('Dish deleted successfully!');
         fetchDishes(); // Refresh the list
       } catch (err: any) {

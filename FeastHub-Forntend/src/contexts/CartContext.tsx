@@ -44,7 +44,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
               Authorization: `Bearer ${token}`,
             },
           };
-          const { data } = await axios.get('http://localhost:5000/api/users/cart', config);
+          const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/users/cart`, config);
           setItems(data.map((item: any) => {
             return {
               _id: item._id, // Map _id to _id
@@ -82,7 +82,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
       };
       const { data } = await axios.post(
-        'http://localhost:5000/api/users/cart',
+        `${import.meta.env.VITE_API_URL}/users/cart`,
         { dishId: dish._id, quantity, customizations },
         config
       );
@@ -111,7 +111,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
       };
       const { data } = await axios.delete(
-        `http://localhost:5000/api/users/cart/${itemId}`,
+        `${import.meta.env.VITE_API_URL}/users/cart/${itemId}`,
         config
       );
       setItems(data.map((item: any) => {
@@ -149,7 +149,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!item) return;
 
       const response = await axios.put(
-          'http://localhost:5000/api/users/cart',
+          `${import.meta.env.VITE_API_URL}/users/cart`,
           { dishId: item.dish._id, quantity },
           config
         );
@@ -177,7 +177,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           Authorization: `Bearer ${token}`,
         },
       };
-      await axios.delete('http://localhost:5000/api/users/cart', config);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/users/cart`, config);
       setItems([]);
       console.log('Cart cleared in backend.');
     } catch (error) {

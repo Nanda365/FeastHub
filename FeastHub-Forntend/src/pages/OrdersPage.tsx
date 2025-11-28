@@ -176,7 +176,7 @@ const OrdersPage: React.FC = () => {
       // Refresh user data in AuthContext if the logged-in user is a delivery partner
       // This ensures the DeliveryDashboard (if user is DP) shows updated ratings immediately
       if (userInfo.role === 'delivery') { // Use userInfo from parsed localStorage
-        const { data: updatedUserData } = await axios.get('http://localhost:5000/api/users/profile', config);
+        const { data: updatedUserData } = await axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, config);
         updateUser(updatedUserData);
       }
 
@@ -238,7 +238,7 @@ const OrdersPage: React.FC = () => {
       };
 
       const { data: order } = await axios.post(
-        'http://localhost:5000/api/payment/custom-order',
+        `${import.meta.env.VITE_API_URL}/payment/custom-order`,
         { customOrderId, amount: price },
         config
       );
@@ -260,15 +260,15 @@ const OrdersPage: React.FC = () => {
 
           try {
             await axios.post(
-              'http://localhost:5000/api/payment/custom-order/verify',
+              `${import.meta.env.VITE_API_URL}/payment/custom-order/verify`,
               verificationData,
               config
             );
 
             // Refresh orders after successful payment
             const [regularOrdersResponse, customOrdersResponse] = await Promise.all([
-              axios.get('http://localhost:5000/api/orders/myorders', config),
-              axios.get('http://localhost:5000/api/custom-orders/myorders', config),
+              axios.get(`${import.meta.env.VITE_API_URL}/orders/myorders`, config),
+              axios.get(`${import.meta.env.VITE_API_URL}/custom-orders/myorders`, config),
             ]);
 
             const combinedOrders = [
