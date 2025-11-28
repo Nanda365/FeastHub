@@ -1,4 +1,3 @@
-console.log('Server file loaded.');
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -20,7 +19,6 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
-app.options('*', cors());
 
 app.use(express.json());
 
