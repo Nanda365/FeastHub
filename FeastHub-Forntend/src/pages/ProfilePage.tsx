@@ -13,7 +13,7 @@ interface ProfileForm {
   phone: string;
 }
 
-interface Order {
+interface RegularOrder {
   _id: string;
   orderCode: string;
   totalPrice: number;
@@ -23,9 +23,19 @@ interface Order {
   paymentStatus: string;
 }
 
+interface ParentOrder {
+  _id: string;
+  orderCode: string; // Parent order also has an order code
+  totalPrice: number;
+  createdAt: string;
+  orders: RegularOrder[]; // This is the key change: array of RegularOrders
+  deliveryRating?: number; // Added in previous step
+  paymentStatus: string; // Assuming parent order also has this
+}
+
 const ProfilePage = () => {
   const { user, token, updateUser } = useAuth();
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<ParentOrder[]>([]); // Changed type to ParentOrder[]
   const [isEditing, setIsEditing] = useState(false);
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProfileForm>();
 
@@ -200,9 +210,9 @@ const ProfilePage = () => {
                     <tr key={order._id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.orderCode}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.orderItems.map(item => `${item.name} x${item.qty}`).join(', ')}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.orders.flatMap(childOrder => (childOrder.orderItems || []).map(item => `${item.name} x${item.qty}`)).join(', ')}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{order.totalPrice.toFixed(2)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.orderStatus}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.orders.map(childOrder => childOrder.orderStatus).filter(status => status).join(', ')}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.paymentStatus}</td>
                     </tr>
                   ))}

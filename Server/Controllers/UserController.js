@@ -145,6 +145,8 @@ const getUserProfile = async (req, res) => {
         deliveryRequestStatus: user.deliveryRequestStatus,
         deliveryPartnerId: user.deliveryPartnerId,
         restaurantName: restaurantName, // Add restaurant name here
+        deliveryRating: user.deliveryRating, // Include deliveryRating
+        numDeliveryReviews: user.numDeliveryReviews, // Include numDeliveryReviews
       });
     } else {
       res.status(404).json({ message: 'User not found' });

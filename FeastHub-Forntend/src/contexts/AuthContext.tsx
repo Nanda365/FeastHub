@@ -14,6 +14,8 @@ interface User {
   restaurantName?: string; 
   deliveryRequestStatus?: 'none' | 'pending' | 'approved' | 'rejected';
   deliveryPartnerId?: string | null;
+  deliveryRating?: number; // New property
+  numDeliveryReviews?: number; // New property
 }
 
 interface AuthContextType {

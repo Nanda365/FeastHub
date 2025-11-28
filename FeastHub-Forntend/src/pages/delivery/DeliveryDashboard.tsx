@@ -98,10 +98,10 @@ const DeliveryDashboard = () => {
     },
     {
       title: 'Rating',
-      value: '4.9',
+      value: user?.deliveryRating ? user.deliveryRating.toFixed(1) : '4.6',
       icon: Star,
       color: 'bg-purple-500',
-      change: '+0.1',
+      change: user?.numDeliveryReviews ? `(${user.numDeliveryReviews} reviews)` : '',
     },
   ];
 
@@ -118,7 +118,7 @@ const DeliveryDashboard = () => {
         },
       };
       const { data } = await axios.get('http://localhost:5000/api/orders/deliverypartner', config);
-      setDeliveryOrders(data);
+      setDeliveryOrders(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching delivery orders:', error);
       toast.error('Failed to fetch delivery orders.');
@@ -128,7 +128,7 @@ const DeliveryDashboard = () => {
   const fetchDonations = async () => {
     try {
       const { data } = await axios.get('http://localhost:5000/api/donations');
-      setDonations(data.donations);
+      setDonations(Array.isArray(data.donations) ? data.donations : []);
     } catch (error) {
       console.error('Error fetching donations:', error);
       toast.error('Failed to fetch donations.');

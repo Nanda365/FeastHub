@@ -23,8 +23,14 @@ const orderSchema = mongoose.Schema(
           required: true,
           ref: 'Dish',
         },
+        rating: {
+          type: Number,
+        },
       },
     ],
+    deliveryRating: {
+      type: Number,
+    },
     totalPrice: {
       type: Number,
       required: true,

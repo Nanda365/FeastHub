@@ -17,77 +17,107 @@ const generateOrderCode = () => {
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
-const createOrder = asyncHandler(async (req, res) => {
-  const { orderItems, totalPrice, basicItems, deliveryAddress, estimatedTime, paymentMethod, paymentStatus } = req.body;
+import ParentOrder from '../models/ParentOrder.js';
 
-  if (orderItems && orderItems.length === 0) {
+// @desc    Create new order
+// @route   POST /api/orders
+// @access  Private
+const createOrder = asyncHandler(async (req, res) => {
+  const { orderItems, deliveryAddress, paymentMethod } = req.body;
+
+  if (!orderItems || orderItems.length === 0) {
     res.status(400);
     throw new Error('No order items');
-  } else {
-    // Fetch dish details to ensure price and name are correct and not manipulated by client
-    const itemsFromDB = await Dish.find({
-      _id: { $in: orderItems.map((x) => x.dish) },
-    });
+  }
 
-    const matchOrderItems = orderItems.map((item) => {
-      const dbItem = itemsFromDB.find((x) => x._id.toString() === item.dish);
-      if (!dbItem) {
-        res.status(404);
-        throw new Error(`Dish not found for ID: ${item.dish}`);
-      }
-      return {
-        name: dbItem.name,
-        qty: item.qty,
-        image: dbItem.image,
-        price: dbItem.price,
-        dish: dbItem._id,
+  // Fetch all dish details from the database in one go
+  const dishIds = orderItems.map((item) => item.dish);
+  const itemsFromDB = await Dish.find({ _id: { $in: dishIds } }).populate('restaurant');
+
+  // Group order items by restaurant
+  const ordersByRestaurant = orderItems.reduce((acc, item) => {
+    const dbItem = itemsFromDB.find((x) => x._id.toString() === item.dish);
+    if (!dbItem) {
+      // This should ideally not happen if cart is managed properly
+      return acc;
+    }
+    const restaurantId = dbItem.restaurant._id.toString();
+    if (!acc[restaurantId]) {
+      acc[restaurantId] = {
         restaurant: dbItem.restaurant,
+        orderItems: [],
+        totalPrice: 0,
       };
+    }
+    acc[restaurantId].orderItems.push({
+      name: dbItem.name,
+      qty: item.qty,
+      image: dbItem.image,
+      price: dbItem.price,
+      dish: dbItem._id,
     });
+    acc[restaurantId].totalPrice += dbItem.price * item.qty;
+    return acc;
+  }, {});
 
-    // Calculate total price on the server side to prevent client-side manipulation
-    const calculatedTotalPrice = matchOrderItems.reduce(
-      (acc, item) => acc + item.price * item.qty,
-      0
-    );
+  const createdOrders = [];
+  let totalParentOrderPrice = 0;
 
+  // Create an order for each restaurant
+  for (const restaurantId in ordersByRestaurant) {
+    const restaurantOrder = ordersByRestaurant[restaurantId];
     const orderCode = generateOrderCode();
 
     const order = new Order({
       user: req.user._id,
-      restaurant: matchOrderItems[0].restaurant, // Assuming all dishes in an order are from the same restaurant
-      orderItems: matchOrderItems,
-      totalPrice: calculatedTotalPrice,
-      orderCode: orderCode, // Add the generated order code
-      basicItems: basicItems || [],
+      restaurant: restaurantOrder.restaurant._id,
+      orderItems: restaurantOrder.orderItems,
+      totalPrice: restaurantOrder.totalPrice,
+      orderCode,
       deliveryAddress,
-      estimatedTime,
       paymentMethod,
       paymentStatus: paymentMethod === 'cod' ? 'Pending' : 'Paid',
     });
 
     const createdOrder = await order.save();
-
+    
     // Update restaurant stats
-    const restaurant = await Restaurant.findById(matchOrderItems[0].restaurant);
+    const restaurant = await Restaurant.findById(restaurantOrder.restaurant._id);
     if (restaurant) {
-      
       restaurant.totalOrders += 1;
-      restaurant.totalRevenue += calculatedTotalPrice;
-      
+      restaurant.totalRevenue += restaurantOrder.totalPrice;
       await restaurant.save();
-      
     }
-
-    res.status(201).json(createdOrder);
+    
+    createdOrders.push(createdOrder);
+    totalParentOrderPrice += restaurantOrder.totalPrice;
   }
+
+  // Create a parent order
+  const parentOrderCode = generateOrderCode();
+  const parentOrder = new ParentOrder({
+    user: req.user._id,
+    orders: createdOrders.map(order => order._id),
+    totalPrice: totalParentOrderPrice,
+    deliveryAddress,
+    paymentMethod,
+    paymentStatus: paymentMethod === 'cod' ? 'Pending' : 'Paid',
+    orderCode: parentOrderCode,
+  });
+
+  const createdParentOrder = await parentOrder.save();
+
+  res.status(201).json(createdParentOrder);
 });
 
 const getOrderById = asyncHandler(async (req, res) => {
-  const order = await Order.findById(req.params.id).populate(
-    'user',
-    'name email phone'
-  );
+  const order = await ParentOrder.findById(req.params.id).populate({
+    path: 'orders',
+    populate: {
+      path: 'restaurant',
+      model: 'Restaurant'
+    }
+  }).populate('user', 'name email phone');
 
   if (order) {
     res.json(order);
@@ -101,11 +131,14 @@ const getOrderById = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 }).populate(
-    'user',
-    'name email phone'
-  ).populate('orderItems.dish', 'name imageUrl');
-  res.json(orders);
+  const parentOrders = await ParentOrder.find({ user: req.user._id }).sort({ createdAt: -1 }).populate({
+    path: 'orders',
+    populate: [
+      { path: 'restaurant', model: 'Restaurant' },
+      { path: 'orderItems.dish', model: 'Dish' }
+    ]
+  });
+  res.json(parentOrders);
 });
 
 // @desc    Get orders for delivery partner
@@ -127,7 +160,7 @@ const getDeliveryPartnerOrders = asyncHandler(async (req, res) => {
     .populate('user', 'name email phone')
     .populate('restaurant', 'name address phone')
     .populate('orderItems.dish', 'name imageUrl')
-    .populate('deliveryPartner', 'name');
+    .populate('deliveryPartner', 'name deliveryRating numDeliveryReviews');
 
   res.json(orders);
 });
@@ -216,4 +249,63 @@ const getRestaurantOrders = asyncHandler(async (req, res) => {
   res.json(allOrders);
 });
 
-export { createOrder, getOrderById, getMyOrders, getDeliveryPartnerOrders, updateOrderStatus, getAllOrders, getRestaurantOrders };
+import User from '../models/User.js';
+
+// @desc    Rate an order (delivery and dishes)
+// @route   POST /api/orders/:id/rate
+// @access  Private
+const rateOrder = asyncHandler(async (req, res) => {
+  const { deliveryRating, dishRatings } = req.body;
+  const parentOrderId = req.params.id;
+
+  const parentOrder = await ParentOrder.findById(parentOrderId).populate('orders');
+
+  if (parentOrder) {
+    // Rate delivery
+    if (deliveryRating) {
+      parentOrder.deliveryRating = deliveryRating;
+      for (const childOrder of parentOrder.orders) {
+        childOrder.deliveryRating = deliveryRating;
+        if (childOrder.deliveryPartner) {
+          const deliveryPartner = await User.findById(childOrder.deliveryPartner);
+          if (deliveryPartner) {
+            const totalRating = deliveryPartner.deliveryRating * deliveryPartner.numDeliveryReviews;
+            deliveryPartner.numDeliveryReviews += 1;
+            deliveryPartner.deliveryRating = (totalRating + deliveryRating) / deliveryPartner.numDeliveryReviews;
+            await deliveryPartner.save();
+          }
+        }
+        await childOrder.save();
+      }
+    }
+
+    // Rate dishes
+    if (dishRatings && Array.isArray(dishRatings)) {
+      for (const { dishId, rating } of dishRatings) {
+        for (const childOrder of parentOrder.orders) {
+          const orderItem = childOrder.orderItems.find(item => item.dish.toString() === dishId);
+          if (orderItem) {
+            orderItem.rating = rating;
+            const dish = await Dish.findById(dishId);
+            if (dish) {
+              const totalRating = dish.rating * dish.numReviews;
+              dish.numReviews += 1;
+              dish.rating = (totalRating + rating) / dish.numReviews;
+              await dish.save();
+            }
+            await childOrder.save();
+          }
+        }
+      }
+    }
+
+    const updatedParentOrder = await parentOrder.save();
+    res.json({ message: 'Thank you for your feedback!', order: updatedParentOrder });
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
+
+export { createOrder, getOrderById, getMyOrders, getDeliveryPartnerOrders, updateOrderStatus, getAllOrders, getRestaurantOrders, rateOrder };
+

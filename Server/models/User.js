@@ -94,6 +94,14 @@ const userSchema = new mongoose.Schema(
         phone: { type: String, required: true },
       },
     ],
+    deliveryRating: {
+      type: Number,
+      default: 0
+    },
+    numDeliveryReviews: {
+      type: Number,
+      default: 0
+    },
   },
   { timestamps: true }
 );
