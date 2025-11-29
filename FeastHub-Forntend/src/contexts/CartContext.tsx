@@ -45,15 +45,20 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             },
           };
           const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/users/cart`, config);
-          setItems(data.map((item: any) => {
-            return {
-              _id: item._id, // Map _id to _id
-              dish: { ...item.dish, id: item.dish._id, restaurantId: item.dish.restaurant }, // Map _id to id and restaurant to restaurantId
-              quantity: item.quantity,
-              customizations: item.customizations || [],
-            };
+          if (Array.isArray(data)) {
+            setItems(data.map((item: any) => {
+              return {
+                _id: item._id, // Map _id to _id
+                dish: { ...item.dish, id: item.dish._id, restaurantId: item.dish.restaurant }, // Map _id to id and restaurant to restaurantId
+                quantity: item.quantity,
+                customizations: item.customizations || [],
+              };
             }));
             console.log('Cart fetched from backend:', data);
+          } else {
+            console.error('Error fetching cart from backend: data is not an array', data);
+            setItems([]);
+          }
         } catch (error) {
               console.error('Error fetching cart from backend:', error);
           setItems([]); // Clear cart on error
@@ -86,15 +91,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         { dishId: dish._id, quantity, customizations },
         config
       );
-      setItems(data.map((item: any) => {
-        return {
-          _id: item._id, // Map _id to _id
-          dish: { ...item.dish, id: item.dish._id, restaurantId: item.dish.restaurant }, // Map _id to id and restaurant to restaurantId
-          quantity: item.quantity,
-          customizations: item.customizations || [],
-        };
+      if (Array.isArray(data)) {
+        setItems(data.map((item: any) => {
+          return {
+            _id: item._id, // Map _id to _id
+            dish: { ...item.dish, id: item.dish._id, restaurantId: item.dish.restaurant }, // Map _id to id and restaurant to restaurantId
+            quantity: item.quantity,
+            customizations: item.customizations || [],
+          };
         }));
         console.log('Item added to cart in backend:', data);
+      } else {
+        console.error('Error adding item to cart in backend: data is not an array', data);
+      }
     } catch (error) {
        console.error('Error adding item to cart in backend:', error);
     }
@@ -114,15 +123,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         `${import.meta.env.VITE_API_URL}/users/cart/${itemId}`,
         config
       );
-      setItems(data.map((item: any) => {
-        return {
-          _id: item._id, // Map _id to _id
-          dish: { ...item.dish, id: item.dish._id, restaurantId: item.dish.restaurant }, // Map _id to id and restaurant to restaurantId
-          quantity: item.quantity,
-          customizations: item.customizations || [],
-        };
+      if (Array.isArray(data)) {
+        setItems(data.map((item: any) => {
+          return {
+            _id: item._id, // Map _id to _id
+            dish: { ...item.dish, id: item.dish._id, restaurantId: item.dish.restaurant }, // Map _id to id and restaurant to restaurantId
+            quantity: item.quantity,
+            customizations: item.customizations || [],
+          };
         }));
         console.log('Item removed from cart in backend:', data);
+      } else {
+        console.error('Error removing item from cart in backend: data is not an array', data);
+      }
     } catch (error) {
        console.error('Error removing item from cart in backend:', error);
     }
@@ -154,15 +167,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           config
         );
         console.log('Axios PUT response:', response);
-        setItems(response.data.map((item: any) => {
-          return {
-            _id: item._id, // Map _id to _id
-            dish: { ...item.dish, id: item.dish._id, restaurantId: item.dish.restaurant }, // Map _id to id and restaurant to restaurantId
-            quantity: item.quantity,
-            customizations: item.customizations || [],
-          };
+        if (Array.isArray(response.data)) {
+          setItems(response.data.map((item: any) => {
+            return {
+              _id: item._id, // Map _id to _id
+              dish: { ...item.dish, id: item.dish._id, restaurantId: item.dish.restaurant }, // Map _id to id and restaurant to restaurantId
+              quantity: item.quantity,
+              customizations: item.customizations || [],
+            };
           }));
           console.log('Cart quantity updated in backend:', response.data);
+        } else {
+            console.error('Error updating cart quantity in backend: data is not an array', response.data);
+        }
     } catch (error: any) {
 
     }

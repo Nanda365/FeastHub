@@ -24,7 +24,12 @@ const FeaturedRestaurants = () => {
     const fetchFeaturedRestaurants = async () => {
       try {
         const response = await axios.get('/api/restaurants/featured');
-        setRestaurants(response.data);
+        if (Array.isArray(response.data)) {
+          setRestaurants(response.data);
+        } else {
+          console.error("API did not return an array for featured restaurants:", response.data);
+          setError('Featured restaurants data is invalid.');
+        }
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch featured restaurants.');

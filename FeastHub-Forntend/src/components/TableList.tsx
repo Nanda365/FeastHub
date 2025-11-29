@@ -16,7 +16,7 @@ interface TableListProps {
   onDelete: (tableId: string) => void;
 }
 
-const TableList: React.FC<TableListProps> = ({ tables, onEdit, onDelete }) => {
+const TableList: React.FC<TableListProps> = ({ tables = [], onEdit, onDelete }) => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">
       <h3 className="font-poppins font-semibold text-lg text-accent-charcoal mb-4">Existing Tables</h3>

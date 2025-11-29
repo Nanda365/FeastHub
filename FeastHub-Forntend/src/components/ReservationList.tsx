@@ -35,7 +35,7 @@ interface ReservationListProps {
   onUpdateStatus: (reservationId: string, newStatus: Reservation['status']) => void;
 }
 
-const ReservationList: React.FC<ReservationListProps> = ({ reservations, onEdit, onDelete, onUpdateStatus }) => {
+const ReservationList: React.FC<ReservationListProps> = ({ reservations = [], onEdit, onDelete, onUpdateStatus }) => {
   const getStatusColor = (status: Reservation['status']) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';

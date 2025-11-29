@@ -29,7 +29,7 @@ const FavoritesPage: React.FC = () => {
           },
         };
         const response = await axios.get<Dish[]>(`${import.meta.env.VITE_API_URL}/favorites`, config);
-        setFavoriteDishes(response.data);
+        setFavoriteDishes(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         if (axios.isAxiosError(err)) {
           setError(err.response?.data?.message || 'Failed to fetch favorites.');

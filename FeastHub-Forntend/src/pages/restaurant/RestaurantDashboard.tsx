@@ -115,8 +115,8 @@ const RestaurantDashboard = () => {
           `${import.meta.env.VITE_API_URL}/custom-orders/${restaurantProfile._id}/orders`,
           config
         );
-        setRegularOrders(restaurantOrders);
-        setDashboardCustomOrders(customOrders);
+        setRegularOrders(Array.isArray(restaurantOrders) ? restaurantOrders : []);
+        setDashboardCustomOrders(Array.isArray(customOrders) ? customOrders : []);
       }
     } catch (err: any) {
       console.error('Error fetching restaurant data:', err);
@@ -472,7 +472,7 @@ const RestaurantDashboard = () => {
                   <p className="font-inter text-gray-600 mb-2">{restaurantData?.address}</p>
                   <p className="font-inter text-gray-600 mb-4">{restaurantData?.description}</p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {restaurantData?.cuisine && restaurantData.cuisine.length > 0 ? (
+                    {restaurantData?.cuisine && Array.isArray(restaurantData.cuisine) && restaurantData.cuisine.length > 0 ? (
                       restaurantData.cuisine.map((c, idx) => (
                         <span key={idx} className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                           {c}

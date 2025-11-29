@@ -5,6 +5,7 @@ import { ArrowLeft, Clock, MapPin } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import StarRating from '../components/StarRating';
+import { useAuth } from '../contexts/AuthContext';
 
 interface OrderItem {
   dish: {
@@ -82,6 +83,7 @@ interface ParentOrder {
 type Order = CustomOrder | ParentOrder;
 
 const OrdersPage: React.FC = () => {
+  const { updateUser } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -162,8 +164,8 @@ const OrdersPage: React.FC = () => {
       };
 
       const dishRatingsForParent = dishRatings[parentOrderId] || {};
-      const flatDishRatings = Object.values(dishRatingsForParent).flatMap(childRatings =>
-        Object.entries(childRatings).map(([dishId, rating]) => ({ dishId, rating }))
+      const flatDishRatings = Object.values(dishRatingsForParent || {}).flatMap(childRatings =>
+        Object.entries(childRatings || {}).map(([dishId, rating]) => ({ dishId, rating }))
       );
 
       const ratingData = {
@@ -327,8 +329,8 @@ const OrdersPage: React.FC = () => {
         ]);
 
         const combinedOrders = [
-          ...parentOrdersResponse.data,
-          ...customOrdersResponse.data,
+          ...(Array.isArray(parentOrdersResponse.data) ? parentOrdersResponse.data : []),
+          ...(Array.isArray(customOrdersResponse.data) ? customOrdersResponse.data : []),
         ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
         setOrders(combinedOrders);
@@ -423,7 +425,7 @@ const OrdersPage: React.FC = () => {
                         </p>
                       </div>
                       <div className="space-y-4">
-                        {order.orders.map(childOrder => (
+                        {(order.orders || []).map(childOrder => (
                           <div key={childOrder._id} className="border border-gray-200 rounded-lg p-4">
                             <div className="flex justify-between items-center mb-2">
                               <h3 className="font-poppins font-semibold text-lg text-accent-charcoal">
@@ -442,7 +444,7 @@ const OrdersPage: React.FC = () => {
                               </span>
                             </div>
                             <ul className="space-y-2">
-                              {childOrder.orderItems.map((item) => (
+                              {(childOrder.orderItems || []).map((item) => (
                                 <li key={item.dish._id} className="flex items-center justify-between">
                                   <div className="flex items-center">
                                     <img src={item.dish.imageUrl} alt={item.dish.name} className="w-12 h-12 rounded-lg object-cover mr-3" />

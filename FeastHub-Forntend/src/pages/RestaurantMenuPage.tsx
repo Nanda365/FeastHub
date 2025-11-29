@@ -67,7 +67,7 @@ const RestaurantMenuPage: React.FC = () => {
 
         // Fetch dishes for the restaurant
         const dishesResponse = await axios.get<Dish[]>(`${import.meta.env.VITE_API_URL}/restaurants/${restaurantId}/dishes`);
-        setDishes(dishesResponse.data);
+        setDishes(Array.isArray(dishesResponse.data) ? dishesResponse.data : []);
 
       } catch (err) {
         if (axios.isAxiosError(err)) {

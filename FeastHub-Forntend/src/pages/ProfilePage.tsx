@@ -55,7 +55,7 @@ const ProfilePage = () => {
           },
         };
         const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/orders/myorders`, config);
-        setOrders(data);
+        setOrders(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching orders:', error);
         toast.error('Failed to fetch orders.');
@@ -210,9 +210,9 @@ const ProfilePage = () => {
                     <tr key={order._id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.orderCode}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.orders.flatMap(childOrder => (childOrder.orderItems || []).map(item => `${item.name} x${item.qty}`)).join(', ')}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{(order.orders || []).flatMap(childOrder => (childOrder.orderItems || []).map(item => `${item.name} x${item.qty}`)).join(', ')}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{order.totalPrice.toFixed(2)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.orders.map(childOrder => childOrder.orderStatus).filter(status => status).join(', ')}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{(order.orders || []).map(childOrder => childOrder.orderStatus).filter(status => status).join(', ')}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.paymentStatus}</td>
                     </tr>
                   ))}

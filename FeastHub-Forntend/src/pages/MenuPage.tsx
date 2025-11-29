@@ -39,7 +39,7 @@ const MenuPage = () => {
         }
 
         const response = await axios.get<Dish[]>(url);
-        setDishes(response.data);
+        setDishes(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         setError('Failed to fetch dishes. Please try again later.');
         console.error('Error fetching dishes:', err);

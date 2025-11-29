@@ -37,7 +37,7 @@ const TableBookingPage: React.FC = () => {
         } else {
           // Fetch all restaurants if no specific restaurantId
           const response = await axios.get<Restaurant[]>(`${import.meta.env.VITE_API_URL}/restaurants`);
-          setRestaurants(response.data);
+          setRestaurants(Array.isArray(response.data) ? response.data : []);
         }
       } catch (err: any) {
         console.error('Error fetching data:', err);
@@ -106,7 +106,7 @@ const TableBookingPage: React.FC = () => {
                     <span className="font-inter text-sm text-gray-600">{restaurant.avgRating.toFixed(1)} ({restaurant.numReviews} reviews)</span>
                   </div>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {restaurant.cuisine && restaurant.cuisine.map((c, idx) => (
+                    {restaurant.cuisine && Array.isArray(restaurant.cuisine) && restaurant.cuisine.map((c, idx) => (
                       <span key={idx} className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                         {c}
                       </span>
