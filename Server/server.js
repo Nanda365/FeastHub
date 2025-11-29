@@ -1,4 +1,3 @@
-console.log('Server file loaded.');
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -19,13 +18,10 @@ dotenv.config();
 
 const app = express();
 
-// CORS Middleware (configure origin if using frontend locally)
-app.use(cors("*"));
+app.use(cors());
 
-// JSON body parsing middleware
 app.use(express.json());
 
-// Route mounting
 app.use('/api/users', userRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/restaurants', restaurantRoutes);
@@ -41,14 +37,11 @@ app.get('/api/test', (req, res) => {
   res.send('Test route works!');
 });
 
-// Database connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error(err));
 
-// Centralized error handling middleware
 app.use(errorHandler);
 
-// Launch the server on desired port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
