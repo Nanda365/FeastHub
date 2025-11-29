@@ -44,7 +44,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
               Authorization: `Bearer ${token}`,
             },
           };
-          const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/users/cart`, config);
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/cart`, config);
+          console.log('Full axios response:', response);
+          const { data } = response;
           if (Array.isArray(data)) {
             setItems(data.map((item: any) => {
               return {
@@ -86,11 +88,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           Authorization: `Bearer ${token}`,
         },
       };
-      const { data } = await axios.post(
+      const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/users/cart`,
         { dishId: dish._id, quantity, customizations },
         config
       );
+      console.log('Full axios response from addToCart:', response);
+      const { data } = response;
       if (Array.isArray(data)) {
         setItems(data.map((item: any) => {
           return {
@@ -119,10 +123,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           Authorization: `Bearer ${token}`,
         },
       };
-      const { data } = await axios.delete(
+      const response = await axios.delete(
         `${import.meta.env.VITE_API_URL}/users/cart/${itemId}`,
         config
       );
+      console.log('Full axios response from removeFromCart:', response);
+      const { data } = response;
       if (Array.isArray(data)) {
         setItems(data.map((item: any) => {
           return {
