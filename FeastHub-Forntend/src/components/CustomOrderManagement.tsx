@@ -48,10 +48,15 @@ const CustomOrderManagement: React.FC<CustomOrderManagementProps> = ({
           config
         );
         console.log('Raw custom orders data from API:', data); // Debugging line
-        const uniqueOrders = Array.from(new Map(data.map(order => [order._id, order])).values());
-        // Sort orders by createdAt in descending order (newest first)
-        const sortedOrders = uniqueOrders.sort((a: CustomOrder, b: CustomOrder) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        setCustomOrders(sortedOrders);
+        if (Array.isArray(data)) {
+          const uniqueOrders = Array.from(new Map(data.map(order => [order._id, order])).values());
+          // Sort orders by createdAt in descending order (newest first)
+          const sortedOrders = uniqueOrders.sort((a: CustomOrder, b: Custom디어) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setCustomOrders(sortedOrders);
+        } else {
+          console.error('Error fetching custom orders: data is not an array', data);
+          setError('Failed to fetch custom orders.');
+        }
       } catch (err) {
         console.error('Error fetching custom orders:', err);
         setError('Failed to fetch custom orders.');

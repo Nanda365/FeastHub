@@ -109,7 +109,7 @@ const MoodRecommendations = () => {
 
             {/* Recommended Dishes */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {moodRecommendation.dishes.slice(0, 3).map((dish) => (
+              {Array.isArray(moodRecommendation.dishes) && moodRecommendation.dishes.slice(0, 3).map((dish) => (
                 <DishCard key={dish._id} dish={dish} />
               ))}
             </div>
