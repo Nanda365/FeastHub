@@ -68,7 +68,7 @@ export const initiateRazorpayPayment = async ({
 
     // Create Razorpay order on backend
     const { data: razorpayOrder } = await axios.post(
-      '/api/payment/razorpay/order',
+      `${import.meta.env.VITE_API_URL}/payment/razorpay/order`,
       { amount: total, currency: 'INR' },
       config
     );
@@ -86,7 +86,7 @@ export const initiateRazorpayPayment = async ({
 
           // Verify payment on backend
           const { data: verificationResponse } = await axios.post(
-            '/api/payment/razorpay/verify',
+            `${import.meta.env.VITE_API_URL}/payment/razorpay/verify`,
             { razorpay_order_id, razorpay_payment_id, razorpay_signature },
             config
           );

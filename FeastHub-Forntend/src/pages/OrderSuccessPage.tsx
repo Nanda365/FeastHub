@@ -19,7 +19,7 @@ const OrderSuccessPage = () => {
         return;
       }
       try {
-        const response = await axios.get(`/api/orders/${initialOrderId}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/orders/${initialOrderId}`);
         setOrder(response.data);
         setTimeRemaining(response.data.estimatedTime || 25);
       } catch (err) {

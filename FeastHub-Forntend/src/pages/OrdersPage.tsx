@@ -173,7 +173,7 @@ const OrdersPage: React.FC = () => {
         dishRatings: flatDishRatings,
       };
 
-      await axios.post(`/api/orders/${parentOrderId}/rate`, ratingData, config);
+      await axios.post(`${import.meta.env.VITE_API_URL}/orders/${parentOrderId}/rate`, ratingData, config);
 
       // Refresh user data in AuthContext if the logged-in user is a delivery partner
       // This ensures the DeliveryDashboard (if user is DP) shows updated ratings immediately
@@ -184,8 +184,8 @@ const OrdersPage: React.FC = () => {
 
       // Refresh orders to show the new ratings
       const [parentOrdersResponse, customOrdersResponse] = await Promise.all([
-        axios.get('/api/orders/myorders', config),
-        axios.get('/api/custom-orders/myorders', config),
+        axios.get(`${import.meta.env.VITE_API_URL}/orders/myorders`, config),
+        axios.get(`${import.meta.env.VITE_API_URL}/custom-orders/myorders`, config),
       ]);
 
       const combinedOrders = [
@@ -324,8 +324,8 @@ const OrdersPage: React.FC = () => {
         };
 
         const [parentOrdersResponse, customOrdersResponse] = await Promise.all([
-          axios.get('/api/orders/myorders', config),
-          axios.get('/api/custom-orders/myorders', config),
+          axios.get(`${import.meta.env.VITE_API_URL}/orders/myorders`, config),
+          axios.get(`${import.meta.env.VITE_API_URL}/custom-orders/myorders`, config),
         ]);
 
         const combinedOrders = [

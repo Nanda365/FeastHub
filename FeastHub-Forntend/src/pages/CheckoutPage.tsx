@@ -90,7 +90,7 @@ const CheckoutPage = () => {
           },
         };
         const response = await axios.post(
-          '/api/orders',
+          `${import.meta.env.VITE_API_URL}/orders`,
           { ...orderData, paymentStatus: 'Pending' },
           config
         );
