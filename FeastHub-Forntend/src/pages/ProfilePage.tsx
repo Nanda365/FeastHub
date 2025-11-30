@@ -55,7 +55,7 @@ const ProfilePage = () => {
           },
         };
         const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/orders/myorders`, config);
-        setOrders(Array.isArray(data) ? data : []);
+        setOrders(Array.isArray(data) ? data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5) : []);
       } catch (error) {
         console.error('Error fetching orders:', error);
         toast.error('Failed to fetch orders.');
